@@ -1,0 +1,12 @@
+<!--
+  Copy these English usage strings into the Expo / iOS Info.plist.
+  Reviewers must see why each sensor exists.
+-->
+<key>NSMicrophoneUsageDescription</key>
+<string>S2RB uses the microphone only for on-device agent environment safety assessment, such as acoustic level checks before a handshake. Audio never leaves this device.</string>
+<key>NSCameraUsageDescription</key>
+<string>S2RB uses the camera to scan a local QR code that points at a household host on the LAN. The image is not uploaded.</string>
+<key>NSLocalNetworkUsageDescription</key>
+<string>S2RB discovers S2 hosts on the local network so a phone can open the genesis page without sending the topology to the cloud.</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>S2RB may read coarse location only to label a SITE doorplate the user is editing. Coordinates are not sent with failed DID probes.</string>

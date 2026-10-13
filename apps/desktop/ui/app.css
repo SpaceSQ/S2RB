@@ -1,0 +1,33 @@
+:root {
+  color: #d8ffe8;
+  background: #06110c;
+  font-family: "SF Pro Text", "PingFang SC", sans-serif;
+}
+body { margin: 0; }
+header, section { padding: 16px 22px; }
+.mark { letter-spacing: 0.12em; color: #2ee6a6; font-size: 12px; }
+h1, h2 { margin: 6px 0 10px; font-weight: 600; }
+.row { display: flex; gap: 8px; }
+input {
+  flex: 1;
+  background: #0c1c16;
+  border: 1px solid #1f4a3a;
+  color: #d8ffe8;
+  padding: 8px 10px;
+}
+button {
+  background: #2ee6a6;
+  color: #06110c;
+  border: 0;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+.hint { color: #7aa892; font-size: 13px; }
+ul { padding-left: 18px; }
+iframe {
+  width: calc(100% - 44px);
+  height: 420px;
+  margin: 0 22px 22px;
+  border: 1px solid #1f4a3a;
+  background: #000;
+}

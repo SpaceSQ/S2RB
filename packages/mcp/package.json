@@ -1,0 +1,21 @@
+{
+  "name": "@s2/mcp-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "S2 AIOS MCP server. L4 topology, 14-axis radar, and actuation stay behind Rainbow Bridge.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "exports": "./src/index.ts",
+  "bin": {
+    "s2-mcp": "./src/stdio.ts"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "start": "node --experimental-strip-types src/stdio.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.2"
+  }
+}

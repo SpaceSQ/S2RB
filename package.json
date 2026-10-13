@@ -1,0 +1,16 @@
+{
+  "name": "s2rb",
+  "version": "1.0.0",
+  "private": true,
+  "description": "S2 Rainbow Bridge — independent federation gateway. Web, desktop, mobile, Raspberry Pi host.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "test": "npm test --prefix apps/web && npm test --prefix packages/mcp && npm test --prefix apps/mobile",
+    "dev": "npm run dev --prefix apps/web",
+    "build:web": "npm run build --prefix apps/web",
+    "mcp": "npm run mcp --prefix apps/web",
+    "host": "docker compose -f apps/host/docker-compose.yml up -d"
+  }
+}

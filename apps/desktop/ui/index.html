@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>S2 Rainbow Bridge</title>
+  <link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+  <header>
+    <p class="mark">S2RB · DESKTOP</p>
+    <h1>彩虹桥驻留代理</h1>
+    <p>关掉窗口会落到托盘。握手记录与 22 位 S2-DID 白名单只写本机 SQLite，不上云。</p>
+  </header>
+  <main>
+    <section>
+      <h2>局域网 Host</h2>
+      <div class="row">
+        <input id="host" placeholder="192.168.1.8" />
+        <button id="scan" type="button">扫描 1884/lan</button>
+        <button id="bind" type="button">打开驾驶舱</button>
+      </div>
+      <p id="scan-status" class="hint">正在听 UDP 18840，也会扫家庭网段。</p>
+      <ul id="hosts"></ul>
+    </section>
+    <section>
+      <h2>S2-DID 白名单</h2>
+      <div class="row">
+        <input id="did" maxlength="22" placeholder="22 位 S2-DID" />
+        <button id="add-did" type="button">写入本机</button>
+      </div>
+      <ul id="dids"></ul>
+    </section>
+    <section>
+      <h2>MQTT</h2>
+      <p id="mqtt" class="hint">等待连接 1883。</p>
+      <ul id="hands"></ul>
+    </section>
+    <iframe id="cockpit" title="S2 cockpit" hidden></iframe>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "S2 Rainbow Bridge",
+    "slug": "s2rb-mobile",
+    "scheme": "s2rb",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#06110c"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "world.space2.s2rb",
+      "infoPlist": {
+        "NSLocalNetworkUsageDescription": "S2RB discovers S2 AIOS hosts and silicon agents on the same Wi-Fi. Topology stays on this device.",
+        "NSCameraUsageDescription": "S2RB scans the pairing QR code of a local S2 AIOS host.",
+        "NSMicrophoneUsageDescription": "S2RB may sample ambient noise for Red Anchor safety assessment. Audio never leaves this device.",
+        "NSBonjourServices": ["_s2-aios._tcp."]
+      }
+    },
+    "android": {
+      "package": "world.space2.s2rb",
+      "adaptiveIcon": {
+        "backgroundColor": "#06110c"
+      },
+      "permissions": [
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.INTERNET",
+        "android.permission.CHANGE_WIFI_MULTICAST_STATE"
+      ]
+    },
+    "plugins": ["expo-network"]
+  }
+}

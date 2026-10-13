@@ -1,0 +1,28 @@
+{
+  "name": "@s2/s2rb-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "S2 Rainbow Bridge + cockpit phone client. Expo / EAS APK and iOS.",
+  "scripts": {
+    "test": "node --test src/discover.test.js",
+    "check:env": "node scripts/check-env.mjs",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "build:apk": "npm run check:env && eas build -p android --profile production",
+    "build:ios": "npm run check:env && eas build -p ios --profile production",
+    "build:preview": "eas build -p android --profile preview"
+  },
+  "dependencies": {
+    "expo": "~52.0.46",
+    "expo-network": "~7.0.5",
+    "expo-status-bar": "~2.0.1",
+    "react": "18.3.1",
+    "react-native": "0.76.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2"
+  }
+}

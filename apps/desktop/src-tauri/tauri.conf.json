@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "S2 Rainbow Bridge",
+  "version": "0.1.0",
+  "identifier": "world.space2.s2rb",
+  "build": {
+    "frontendDist": "../ui"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "S2 Rainbow Bridge",
+        "width": 1100,
+        "height": 740,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:* http://192.168.*:* http://10.*:* http://172.16.*:* http://172.17.*:* http://172.18.*:* http://172.19.*:* http://172.20.*:* http://172.21.*:* http://172.22.*:* http://172.23.*:* http://172.24.*:* http://172.25.*:* http://172.26.*:* http://172.27.*:* http://172.28.*:* http://172.29.*:* http://172.30.*:* http://172.31.*:* ws://127.0.0.1:* ws://192.168.*:*; frame-src http://127.0.0.1:* http://192.168.*:* http://10.*:*"
+    },
+    "trayIcon": {
+      "iconPath": "icons/32x32.png",
+      "iconAsTemplate": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg", "nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": false
+      }
+    },
+    "macOS": {
+      "minimumSystemVersion": "11.0"
+    }
+  }
+}

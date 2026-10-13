@@ -1,0 +1,12 @@
+S2 Rainbow Bridge (S2RB)
+Copyright (c) 2026 Miles Xiang & RobotZero team
+ROBOTZERO (Guangzhou Linghao Software Technology Co., Ltd. / 广州零号软件科技有限公司)
+
+The core architecture is released under the Apache License, Version 2.0.
+S2RB clients are free for personal use only. Commercial use, repackaging,
+and resale of modified copies are forbidden.
+
+CD-U6A spatial entitlement and the 14-axis tensor engine core algorithms
+are covered by patent applications filed by Guangzhou Linghao Software
+Technology Co., Ltd. (ROBOTZERO). All S2 AIOS / S2RB development teams
+belong to ROBOTZERO. Development lead: Miles Xiang.

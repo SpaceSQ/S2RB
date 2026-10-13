@@ -1,0 +1,18 @@
+services:
+  s2rb-web:
+    build:
+      context: ../..
+      dockerfile: apps/host/Dockerfile
+    ports:
+      - "3100:3100"
+    environment:
+      NODE_ENV: production
+      PORT: "3100"
+    restart: unless-stopped
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    restart: unless-stopped

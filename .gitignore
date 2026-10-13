@@ -1,0 +1,11 @@
+node_modules
+.next
+.expo
+.env
+.env.local
+target
+dist
+*.log
+.DS_Store
+apps/desktop/src-tauri/gen
+apps/host/data
