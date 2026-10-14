@@ -1,3 +1,5 @@
+export { screenDid } from "../../../packages/did/src/index.ts";
+
 export const DID = /^[A-Z0-9]{22}$/;
 
 export function subnetHosts(localIp) {

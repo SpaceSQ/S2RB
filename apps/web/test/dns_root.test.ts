@@ -56,7 +56,7 @@ test("screenDid blocks a short or illegal DID before any network request", async
   assert.equal(hits, 0);
 });
 
-test("SITE stays local and a MARS miss may go to Taohuayuan after the gate", async () => {
+test("SITE stays local and a MARS query may go to Taohuayuan after the gate", async () => {
   const cache = createMemoryCache();
   const site = await resolveQuery({ raw: "SITE-GZTIANHE-TIYUXILU-SHEJIDASHA-ROOM01-01", cache });
   assert.equal(site.ok, true);
@@ -70,12 +70,15 @@ test("SITE stays local and a MARS miss may go to Taohuayuan after the gate", asy
       looked += 1;
       assert.equal(body.handshake, "HIT");
       assert.equal(body.query.startsWith("MARS-"), true);
-      return { ok: true, lane: "TAOHUAYUAN", query: body.query, root: "TAOHUAYUAN" };
+      return { ok: true, lane: "TAOHUAYUAN", query: body.query, root: "TAOHUAYUAN", source: "HTTP" };
     },
   });
   assert.equal(mars.ok, true);
   if (!mars.ok) return;
   assert.equal(mars.lane, "TAOHUAYUAN");
   assert.equal(looked, 1);
+  const echo = await resolveQuery({ raw: "MARS-CN-001-MYHOME-ROOM02-05" });
+  assert.equal(echo.ok, false);
+  if (!echo.ok) assert.equal(echo.code, "NO_ROOT");
   assert.equal(allowCloudFetch("PHYS-ZZ-001-BASE-ROOM01-01").ok, false);
 });

@@ -10,7 +10,7 @@ test("partner copy names Tencent and Alibaba and does not contest the chat door"
   assert.match(ECOSYSTEM_STANCE, /不与腾讯、阿里争夺通用对话入口/);
   assert.equal(listed.extensions.length, 4);
   for (const lane of FUTURE_EXTENSIONS) {
-    assert.equal(lane.status, "PREPARED");
+    assert.equal(lane.status, "WIRED");
     assert.ok(lane.hosts.length >= 2);
     assert.ok(lane.actions.length >= 3);
     assert.ok(lane.invitation.length > 40);

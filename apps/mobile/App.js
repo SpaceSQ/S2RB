@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Network from "expo-network";
-import { DID, scanLan } from "./src/discover";
+import { scanLan, screenDid } from "./src/discover";
 
 export default function App() {
   const [ip, setIp] = useState("");
@@ -21,12 +21,12 @@ export default function App() {
   }
 
   function addDid() {
-    const clean = did.trim().toUpperCase();
-    if (!DID.test(clean)) {
-      setStatus("DID 必须是 22 位大写字母或数字。白名单只留在这台手机上。");
+    const screened = screenDid(did);
+    if (!screened.ok) {
+      setStatus("DID 必须通过本机 22 位校验和筛。白名单只留在这台手机上。");
       return;
     }
-    if (!list.includes(clean)) setList([...list, clean]);
+    if (!list.includes(screened.clean)) setList([...list, screened.clean]);
     setDid("");
   }
 

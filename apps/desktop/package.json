@@ -2,6 +2,7 @@
   "name": "@s2/s2rb-desktop",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "S2RB desktop client for Windows and macOS. Tray resident, local SQLite only.",
   "scripts": {
     "check:env": "node scripts/check-env.mjs",
@@ -10,7 +11,8 @@
     "dev": "npm run check:env && npm run icons && tauri dev",
     "build": "npm run check:env && npm run icons && npm run export:ui && tauri build",
     "build:dmg": "npm run check:env && npm run icons && npm run export:ui && tauri build --bundles dmg",
-    "build:exe": "npm run check:env && npm run icons && npm run export:ui && tauri build --bundles nsis"
+    "build:exe": "npm run check:env && npm run icons && npm run export:ui && tauri build --bundles nsis",
+    "test": "sh scripts/test.sh"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.1.0"

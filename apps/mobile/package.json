@@ -6,7 +6,7 @@
   "main": "index.js",
   "description": "S2 Rainbow Bridge + cockpit phone client. Expo / EAS APK and iOS.",
   "scripts": {
-    "test": "node --test src/discover.test.js",
+    "test": "node --experimental-strip-types --test src/discover.test.js",
     "check:env": "node scripts/check-env.mjs",
     "start": "expo start",
     "android": "expo start --android",

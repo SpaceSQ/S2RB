@@ -1,0 +1,11 @@
+{
+  "name": "@s2/did",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared 22-character S2-DID screen. Same gate for web, desktop, and mobile.",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  }
+}

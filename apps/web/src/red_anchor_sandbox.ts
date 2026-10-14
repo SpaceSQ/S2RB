@@ -25,7 +25,59 @@ export const TACTILE_NEWTON_MAX = 5;
 export const OXYGEN_PERCENT_MIN = 19.5;
 export const VETO_MARKER = "[VETO_SECURITY]";
 
-export type FuseName = "TACTILE_NEWTON" | "OXYGEN_PERCENT" | "RANK" | "FOREIGN_AXIS" | "MAINS";
+export type FuseName =
+  | "LUMINA_LUX"
+  | "ATMOS_TEMP"
+  | "ACOUSTIC_DB"
+  | "WAVE_DBM"
+  | "ENERGY_WATT"
+  | "VISION_STATE"
+  | "OXYGEN_PERCENT"
+  | "PRESSURE_KPA"
+  | "ODOR_VOC"
+  | "TACTILE_NEWTON"
+  | "MAGNETIC_UT"
+  | "GRAVITY_G"
+  | "WATER_LEAK"
+  | "FOOD_SPOIL"
+  | "RANK"
+  | "FOREIGN_AXIS"
+  | "MAINS";
+
+/** Visa bands for a visitor handshake. Units follow the S2 XR describe port. */
+export const AXIS_BANDS: Record<RadarAxis, { min?: number; max?: number; fuse: FuseName; unit: string }> = {
+  lumina: { min: 1, max: 100_000, fuse: "LUMINA_LUX", unit: "lx" },
+  atmos: { min: 5, max: 45, fuse: "ATMOS_TEMP", unit: "C" },
+  acoustic: { max: 85, fuse: "ACOUSTIC_DB", unit: "dB" },
+  wave: { max: 30, fuse: "WAVE_DBM", unit: "dBm" },
+  energy: { max: 3000, fuse: "ENERGY_WATT", unit: "W" },
+  vision: { min: 0, max: 1, fuse: "VISION_STATE", unit: "state" },
+  base_air: { min: OXYGEN_PERCENT_MIN, fuse: "OXYGEN_PERCENT", unit: "%" },
+  pressure: { min: 80, max: 120, fuse: "PRESSURE_KPA", unit: "kPa" },
+  odor: { max: 200, fuse: "ODOR_VOC", unit: "index" },
+  tactile: { max: TACTILE_NEWTON_MAX, fuse: "TACTILE_NEWTON", unit: "N" },
+  magnetic: { max: 2000, fuse: "MAGNETIC_UT", unit: "uT" },
+  gravity: { min: 0.5, max: 1.5, fuse: "GRAVITY_G", unit: "g" },
+  water: { max: 0.2, fuse: "WATER_LEAK", unit: "ratio" },
+  food: { max: 0.8, fuse: "FOOD_SPOIL", unit: "spoil" },
+};
+
+export const SAFE_RADAR: RadarFrame = {
+  lumina: 80,
+  atmos: 22,
+  acoustic: 40,
+  wave: -40,
+  energy: 60,
+  vision: 0,
+  base_air: 21,
+  pressure: 101,
+  odor: 10,
+  tactile: 1,
+  magnetic: 40,
+  gravity: 1,
+  water: 0,
+  food: 0.1,
+};
 
 export type FuseTrip = {
   ok: false;
@@ -65,6 +117,13 @@ function veto(fuse: FuseName, axis?: RadarAxis, reading?: number): FuseTrip {
   };
 }
 
+function tripBand(axis: RadarAxis, reading: number): FuseTrip | null {
+  const band = AXIS_BANDS[axis];
+  if (typeof band.min === "number" && reading < band.min) return veto(band.fuse, axis, reading);
+  if (typeof band.max === "number" && reading > band.max) return veto(band.fuse, axis, reading);
+  return null;
+}
+
 export function inspectRadar(frame: Record<string, unknown>): FuseClear | FuseTrip {
   if (RADAR_AXES.length !== HOLOGRAPHIC_RANK) return veto("RANK");
   const incoming = { ...frame };
@@ -79,13 +138,11 @@ export function inspectRadar(frame: Record<string, unknown>): FuseClear | FuseTr
     if (typeof value !== "number" || !Number.isFinite(value)) return veto("FOREIGN_AXIS", key as RadarAxis);
     clean[key as RadarAxis] = value;
   }
-  const tactile = clean.tactile;
-  if (typeof tactile === "number" && tactile > TACTILE_NEWTON_MAX) {
-    return veto("TACTILE_NEWTON", "tactile", tactile);
-  }
-  const oxygen = clean.base_air ?? clean.atmos;
-  if (typeof oxygen === "number" && oxygen < OXYGEN_PERCENT_MIN) {
-    return veto("OXYGEN_PERCENT", clean.base_air !== undefined ? "base_air" : "atmos", oxygen);
+  for (const axis of RADAR_AXES) {
+    const reading = clean[axis];
+    if (typeof reading !== "number") continue;
+    const tripped = tripBand(axis, reading);
+    if (tripped) return tripped;
   }
   return {
     ok: true,

@@ -1,0 +1,10 @@
+{
+  "name": "@s2/s2rb-host",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "S2RB Raspberry Pi / Orange Pi / Linux host. Docker Compose + systemd.",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

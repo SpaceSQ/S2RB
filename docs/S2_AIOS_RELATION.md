@@ -8,7 +8,7 @@ English first.
 | Role | Spatial operating system for one room | Federation gateway and visitor client |
 | Owns | Doorplate, 01 avatar, 14-axis radar, `taohuayuan.md`, TrustZone | DID screen, Taohuayuan root, Red Anchor visa, MQTT mailbox, MCP |
 | Ports | 1883 MQTT, 1884 cockpit, 8787 companion | 3100 resolver (this repo) |
-| Install | Docker on a spare PC, or resident on Orange Pi / Raspberry Pi | Web / Windows `.exe` / macOS `.dmg` / Expo APK / Pi host compose |
+| Install | Docker on a spare PC, or resident on Orange Pi / Raspberry Pi | Web / Windows `.exe` / macOS `.dmg` / Expo APK / Pi / Orange Pi host compose |
 | Chat door | No | No |
 | Mains | Deenergized unless TrustZone admits | Never energizes |
 
@@ -33,7 +33,7 @@ Checksum weights stay in `apps/web/vendor/spacsq`. Do not invent a second WEIGHT
 | 角色 | 一间房的空间操作系统 | 联邦网关与访客客户端 |
 | 保管 | 门牌、01 号、14 维雷达、`taohuayuan.md`、TrustZone | DID 筛、桃花源根、红锚签证、MQTT 信箱、MCP |
 | 端口 | 1883 / 1884 / 8787 | 本仓库解析页 3100 |
-| 安装 | Docker 或板子常驻 | 网站 / Windows / Mac / 手机 / 树莓派网关 |
+| 安装 | Docker 或板子常驻 | 网站 / Windows / Mac / 手机 / 树莓派 / 香橙派网关 |
 | 聊天门 | 不是 | 不是 |
 | 强电 | 默认失电 | 从不给市电上电 |
 

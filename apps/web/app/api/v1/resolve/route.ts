@@ -1,5 +1,8 @@
 import { recordValidLookup } from "../../../../lib/cloud.ts";
-import { createMemoryDump, resolveQuery } from "../../../../src/s2rb_dns_root.ts";
+import { createMemoryDump, resolveCache, resolveHttpStatus, resolveQuery } from "../../../../src/s2rb_dns_root.ts";
+import { askTaohuayuan } from "../../../../src/taohuayuan.ts";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
@@ -9,10 +12,12 @@ export async function POST(req: Request) {
     raw,
     dump,
     model: "s2rb-web",
+    cache: resolveCache(),
     async lookup(row) {
-      await recordValidLookup(row);
-      return { ok: true, lane: "TAOHUAYUAN", query: row.query, root: "TAOHUAYUAN" };
+      const asked = await askTaohuayuan({ query: row.query });
+      if (asked.ok) await recordValidLookup(row);
+      return asked;
     },
   });
-  return Response.json(result, { status: result.ok ? 200 : 422 });
+  return Response.json(result, { status: resolveHttpStatus(result) });
 }

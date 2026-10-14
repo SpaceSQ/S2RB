@@ -8,11 +8,40 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3100"
+      MQTT_URL: mqtt://${S2_MQTT_USER:-s2rb}:${S2_MQTT_PASSWORD:-s2rb-local}@mosquitto:1883
+      S2_AIOS_HOST: ${S2_AIOS_HOST:-host.docker.internal}
+      S2_AIOS_ADDRESS: ${S2_AIOS_ADDRESS:-}
+      S2_JOURNAL: /journal/taohuayuan.md
+      S2_SPATIAL_OIDC_SECRET: ${S2_SPATIAL_OIDC_SECRET:-}
+      S2_AUDIT_COMPLETE_URL: ${S2_AUDIT_COMPLETE_URL:-}
+      S2_AUDIT_COMPLETE_TOKEN: ${S2_AUDIT_COMPLETE_TOKEN:-}
+      S2_TAOHUAYUAN_URL: ${S2_TAOHUAYUAN_URL:-}
+      S2_TAOHUAYUAN_ZONE: ${S2_TAOHUAYUAN_ZONE:-}
+      S2_TAOHUAYUAN_ZONE_TEXT: ${S2_TAOHUAYUAN_ZONE_TEXT:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${S2_JOURNAL_DIR:-./data}:/journal:ro
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3100/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    depends_on:
+      - mosquitto
     restart: unless-stopped
   mosquitto:
     image: eclipse-mosquitto:2
     ports:
       - "1883:1883"
+    environment:
+      S2_MQTT_USER: ${S2_MQTT_USER:-s2rb}
+      S2_MQTT_PASSWORD: ${S2_MQTT_PASSWORD:-s2rb-local}
     volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto.conf:/config/mosquitto.conf:ro
+      - ./acl:/config/acl:ro
+      - ./mqtt-entrypoint.sh:/mqtt-entrypoint.sh:ro
+      - ./data/mosquitto:/mosquitto/data
+    entrypoint: ["/bin/sh", "/mqtt-entrypoint.sh"]
     restart: unless-stopped

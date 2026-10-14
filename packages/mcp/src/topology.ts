@@ -1,3 +1,5 @@
+import { GET_EXTENSION_STATUS, REQUEST_ACTUATION } from "./actuation.ts";
+
 export const MCP_SERVER_NAME = "s2-aios";
 export const MCP_SERVER_VERSION = "0.1.0";
 export const GET_SPACE_TOPOLOGY = "get_space_topology";
@@ -35,6 +37,7 @@ export type SpaceTopology = {
   ok: true;
   tool: typeof GET_SPACE_TOPOLOGY;
   address: string;
+  source: "ARG" | "ENV" | "JOURNAL" | "LAN" | "DEFAULT";
   throne: { grid: 1; slot: "01" };
   workbenches: readonly { grid: number; slot: string }[];
   grids: readonly SpaceSeat[];
@@ -68,12 +71,22 @@ export function listMcpTools(): readonly { name: string; description: string; re
         "读取本机 CD-U6A 九宫格与 01 号王座。只读，不推动致动。欢迎腾讯 WorkBuddy / LightVela 与阿里 QoderWork / 通义把本工具登记为家庭物理层的第一跳。",
       readOnly: true,
     },
+    {
+      name: REQUEST_ACTUATION,
+      description: "致动回执。彩虹桥永远返回 VETO_SECURITY，市电保持失电。强电只属于本机 TrustZone。",
+      readOnly: false,
+    },
+    {
+      name: GET_EXTENSION_STATUS,
+      description: "列出四条已接线扩展：办公智能体、空间摘录、长程队列、02–08 技能。不开放聊天门。",
+      readOnly: true,
+    },
   ];
 }
 
 export function getSpaceTopology(
   space: TopologySpace = defaultSpace(),
-  input: { address?: string } = {},
+  input: { address?: string; source?: SpaceTopology["source"] } = {},
 ): SpaceTopology | TopologyFault {
   const address = (input.address ?? space.address).trim().toUpperCase();
   if (!SITE_PLATE.test(address)) {
@@ -84,10 +97,12 @@ export function getSpaceTopology(
     role: grid === THRONE_SEAT ? "THRONE" as const : grid >= 2 && grid <= 8 ? "WORKBENCH" as const : "EDGE" as const,
     slot: String(grid).padStart(2, "0"),
   }));
+  const source = input.address ? input.source ?? "ARG" : input.source ?? "DEFAULT";
   return {
     ok: true,
     tool: GET_SPACE_TOPOLOGY,
     address,
+    source,
     throne: { grid: 1, slot: "01" },
     workbenches: WORKBENCH_SEATS.map((grid) => ({ grid, slot: String(grid).padStart(2, "0") })),
     grids,

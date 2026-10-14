@@ -3,7 +3,7 @@ import test from "node:test";
 import { S2RB_FREE_NOTICE } from "../src/config.ts";
 import { openReviewerSession } from "../src/reviewer.ts";
 import { scanPublicPayload } from "../src/agent_scanner.ts";
-import { createMailbox, mqttAddress, openMediaHole } from "../src/s2rb_tunnel.ts";
+import { createMailbox, didFromMailTopic, MAIL_FILTER, mqttAddress, openMediaHole } from "../src/s2rb_tunnel.ts";
 
 test("the reviewer mailbox skips LAN and receives checksum-valid devices", () => {
   assert.match(S2RB_FREE_NOTICE, /仅限个人免费使用/);
@@ -26,4 +26,10 @@ test("the reviewer mailbox skips LAN and receives checksum-valid devices", () =>
   assert.equal(hole.relay, "NONE");
   assert.equal(hole.store, false);
   assert.equal(createMailbox().post({ toDid: "SHORT", fromDid: open.fleet[0]?.did ?? "", body: "x", atMs: 1 }).ok, false);
+  const topic = mqttAddress(open.fleet[0]?.did ?? "");
+  assert.equal(topic.ok, true);
+  if (!topic.ok) return;
+  assert.equal(topic.topic, `S2/rainbow/${open.fleet[0]?.did}/mail`);
+  assert.equal(didFromMailTopic(topic.topic), open.fleet[0]?.did);
+  assert.equal(MAIL_FILTER, "S2/rainbow/+/mail");
 });

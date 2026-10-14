@@ -25,28 +25,101 @@ a:hover { color: var(--green); }
 .shell {
   width: min(880px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 36px 0 72px;
+  padding: 28px 0 64px;
+}
+
+.gate {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+}
+
+.mast {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.brand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stamp {
+  display: inline-block;
+  border: 1px solid var(--earth);
+  color: var(--earth);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  padding: 4px 8px;
+}
+
+.stamp.dim {
+  border-color: var(--line);
+  color: var(--dim);
+}
+
+.lang-switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.lang-switch button {
+  margin: 0;
+  background: transparent;
+  color: var(--dim);
+  padding: 6px 12px;
+  letter-spacing: 0.12em;
+  font-size: 11px;
+}
+
+.lang-switch button.on {
+  background: var(--earth);
+  color: #fff;
 }
 
 nav {
   display: flex;
   gap: 18px;
   flex-wrap: wrap;
-  margin-bottom: 28px;
   font-size: 12px;
   letter-spacing: 0.12em;
 }
 
+nav a.here { color: var(--green); }
+
 h1, h2, h3 {
   margin: 0 0 10px;
   font-weight: 400;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
   color: var(--earth);
 }
 
+html[lang="zh-CN"] h1,
+html[lang="zh-CN"] h2,
+html[lang="zh-CN"] h3,
+html[lang="zh-CN"] nav,
+html[lang="zh-CN"] .stamp,
+html[lang="zh-CN"] .kicker,
+html[lang="zh-CN"] .house-os-link,
+html[lang="zh-CN"] .lang-switch button {
+  letter-spacing: 0.04em;
+}
+
 h1 { font-size: 22px; }
-h2 { margin-top: 36px; font-size: 16px; }
+h2 { margin-top: 28px; font-size: 16px; }
 h3 { margin-top: 22px; font-size: 14px; color: var(--green); }
+
+.kicker {
+  color: var(--dim);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  margin: 0 0 8px;
+}
 
 ul {
   padding-left: 18px;
@@ -66,6 +139,10 @@ label, .meta {
   margin: 16px 0 8px;
   color: var(--dim);
   font-size: 12px;
+}
+
+.copyright {
+  margin-top: 12px;
 }
 
 input, textarea, button {
@@ -102,12 +179,61 @@ pre {
 .veto { color: var(--mars); }
 .ok { color: var(--green); }
 
-.grid {
+.desk {
+  border: 1px solid var(--line);
+  padding: 16px 16px 18px;
+  margin: 24px 0;
+}
+
+.house-os {
+  border-color: var(--earth);
+}
+
+.house-os-link {
+  display: inline-block;
+  margin-top: 4px;
+  border: 1px solid var(--earth);
+  padding: 8px 14px;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+}
+
+.house-os-link:hover {
+  border-color: var(--green);
+}
+
+.pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
+.windows {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grid, .radar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.radar {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.desk-foot {
+  border-top: 1px solid var(--line);
+  margin-top: 48px;
+  padding-top: 20px;
+}
+
 @media (max-width: 720px) {
-  .grid { grid-template-columns: 1fr; }
+  .grid, .radar, .pair, .windows { grid-template-columns: 1fr; }
+  .mast { align-items: center; }
 }

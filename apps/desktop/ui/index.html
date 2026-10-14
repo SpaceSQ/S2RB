@@ -32,8 +32,18 @@
       <ul id="dids"></ul>
     </section>
     <section>
-      <h2>MQTT</h2>
-      <p id="mqtt" class="hint">等待连接 1883。</p>
+      <h2>MQTT 信箱</h2>
+      <div class="row">
+        <input id="mqtt-user" placeholder="s2rb" />
+        <input id="mqtt-pass" type="password" placeholder="s2rb-local" />
+      </div>
+      <p id="mqtt" class="hint">绑定 Host 后只订 S2/rainbow/+/mail。匿名关闭。</p>
+      <div class="row">
+        <input id="mail-to" maxlength="22" placeholder="收件 DID" />
+        <input id="mail-body" placeholder="信件正文" />
+        <button id="mail-send" type="button">投递</button>
+      </div>
+      <ul id="mail"></ul>
       <ul id="hands"></ul>
     </section>
     <iframe id="cockpit" title="S2 cockpit" hidden></iframe>

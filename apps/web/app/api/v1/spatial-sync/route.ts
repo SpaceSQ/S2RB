@@ -8,7 +8,7 @@ export function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
-  const markdown = typeof body.markdown === "string" ? body.markdown : "";
+  const markdown = typeof body.markdown === "string" ? body.markdown : undefined;
   const token = typeof body.token === "string" ? body.token : undefined;
   const secret = process.env.S2_SPATIAL_OIDC_SECRET ?? "";
   const result = spatialSyncPeek({ markdown, token, secret });

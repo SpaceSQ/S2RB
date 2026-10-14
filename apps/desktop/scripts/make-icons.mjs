@@ -25,22 +25,24 @@ function chunk(type, data) {
   return Buffer.concat([head, body, tail]);
 }
 
-function png(size, rgb) {
-  const raw = Buffer.alloc((size + 1) * size);
+function png(size, rgba) {
+  const stride = 1 + size * 4;
+  const raw = Buffer.alloc(stride * size);
   for (let y = 0; y < size; y += 1) {
-    raw[y * (size + 1)] = 0;
+    raw[y * stride] = 0;
     for (let x = 0; x < size; x += 1) {
-      const o = y * (size + 1) + 1 + x * 3;
-      raw[o] = rgb[0];
-      raw[o + 1] = rgb[1];
-      raw[o + 2] = rgb[2];
+      const o = y * stride + 1 + x * 4;
+      raw[o] = rgba[0];
+      raw[o + 1] = rgba[1];
+      raw[o + 2] = rgba[2];
+      raw[o + 3] = rgba[3];
     }
   }
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(size, 0);
   ihdr.writeUInt32BE(size, 4);
   ihdr[8] = 8;
-  ihdr[9] = 2;
+  ihdr[9] = 6;
   return Buffer.concat([
     Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
     chunk("IHDR", ihdr),
@@ -49,7 +51,7 @@ function png(size, rgb) {
   ]);
 }
 
-const mark = [46, 230, 166];
+const mark = [46, 230, 166, 255];
 writeFileSync(join(dir, "32x32.png"), png(32, mark));
 writeFileSync(join(dir, "128x128.png"), png(128, mark));
 writeFileSync(join(dir, "128x128@2x.png"), png(256, mark));

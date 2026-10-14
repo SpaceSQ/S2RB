@@ -4,9 +4,9 @@ function memoryStore() {
   const key = "s2-desktop-local";
   const read = () => {
     try {
-      return JSON.parse(localStorage.getItem(key) || "{\"dids\":[],\"hands\":[]}");
+      return JSON.parse(localStorage.getItem(key) || "{\"dids\":[],\"hands\":[],\"mail\":[]}");
     } catch {
-      return { dids: [], hands: [] };
+      return { dids: [], hands: [], mail: [] };
     }
   };
   const write = (value) => localStorage.setItem(key, JSON.stringify(value));
@@ -27,8 +27,17 @@ function memoryStore() {
       return Date.now();
     },
     async handshake_list() { return read().hands; },
-    async mqtt_status() { return { connected: false, host: "", last_topic: "" }; },
+    async mqtt_status() { return { connected: false, host: "", last_topic: "S2/rainbow/+/mail" }; },
     async discovered_hosts() { return []; },
+    async mqtt_bind(host) { return host; },
+    async mail_list() { return read().mail || []; },
+    async mail_post(toDid, fromDid, body) {
+      const bag = read();
+      bag.mail = bag.mail || [];
+      bag.mail.unshift({ toDid, fromDid, body, atMs: Date.now() });
+      write(bag);
+      return Date.now();
+    },
   };
 }
 
@@ -42,6 +51,9 @@ async function api(name, args) {
   if (name === "handshake_list") return mem.handshake_list();
   if (name === "mqtt_status") return mem.mqtt_status();
   if (name === "discovered_hosts") return mem.discovered_hosts();
+  if (name === "mqtt_bind") return mem.mqtt_bind(args.host);
+  if (name === "mail_list") return mem.mail_list();
+  if (name === "mail_post") return mem.mail_post(args.toDid, args.fromDid, args.body);
   throw new Error(name);
 }
 
@@ -99,8 +111,10 @@ async function paint() {
   document.getElementById("hands").innerHTML = hands.map((row) => `<li>${row.did} · ${row.host}</li>`).join("");
   const mqtt = await api("mqtt_status", {});
   document.getElementById("mqtt").textContent = mqtt.connected
-    ? `已连接 ${mqtt.host}:1883 ${mqtt.last_topic}`
-    : "MQTT 后台监听未连上。绑定 Host 后会再试。";
+    ? `已连接 ${mqtt.host}:1883 ${mqtt.last_topic || "S2/rainbow/+/mail"}`
+    : "MQTT 未连上。绑定 Host 后只订 S2/rainbow/+/mail。";
+  const mail = await api("mail_list", {});
+  document.getElementById("mail").innerHTML = mail.map((row) => `<li>${row.toDid} ← ${row.fromDid} · ${row.body}</li>`).join("");
 }
 
 document.getElementById("scan").onclick = () => { scanLan().then(paint); };
@@ -110,7 +124,7 @@ document.getElementById("add-did").onclick = async () => {
     document.getElementById("did").value = "";
     await paint();
   } catch {
-    document.getElementById("scan-status").textContent = "DID 必须是 22 位大写字母或数字。";
+    document.getElementById("scan-status").textContent = "DID 必须通过本机 22 位校验和筛。";
   }
 };
 document.getElementById("bind").onclick = async () => {
@@ -119,9 +133,27 @@ document.getElementById("bind").onclick = async () => {
   const frame = document.getElementById("cockpit");
   frame.hidden = false;
   frame.src = `http://${host}:1884/cockpit`;
+  await api("mqtt_bind", {
+    host,
+    username: document.getElementById("mqtt-user").value,
+    password: document.getElementById("mqtt-pass").value,
+  });
   const dids = await api("whitelist_list", {});
   if (dids[0]) await api("handshake_record", { did: dids[0], host });
   await paint();
+};
+
+document.getElementById("mail-send").onclick = async () => {
+  const toDid = document.getElementById("mail-to").value;
+  const body = document.getElementById("mail-body").value;
+  const dids = await api("whitelist_list", {});
+  try {
+    await api("mail_post", { toDid, fromDid: dids[0] || toDid, body });
+    document.getElementById("mail-body").value = "";
+    await paint();
+  } catch {
+    document.getElementById("scan-status").textContent = "投递前须通过同一道 DID 校验，并先绑定 Host。";
+  }
 };
 
 paint();

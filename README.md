@@ -6,6 +6,8 @@
 
 [ Website ](https://s2rb.space2.world) · [ Whitepaper EN ](docs/WHITEPAPER.en.md) · [ 中文白皮书 ](docs/WHITEPAPER.zh.md) · [ User manual ](docs/USER_MANUAL.md)
 
+Official desk (Vercel root `apps/web`, English default, EN/中文 toggle): `/` resolve · `/sandbox` Red Anchor · `/host` Pi / Orange Pi · `/about` partners · `/notice` license. S2 AIOS (house OS, not replaced by S2RB): https://github.com/SpaceSQ/S2AIOS
+
 S2RB is an **independent** product. This repository is https://github.com/SpaceSQ/S2RB — not a folder inside S2 AIOS.
 
 [ 🇨🇳 简体中文请向下滚动 ]
@@ -27,7 +29,7 @@ S2RB/
   apps/web        Next.js resolver + API  (port 3100, Vercel)
   apps/desktop    Tauri v2 — Windows .exe / macOS .dmg, tray + SQLite
   apps/mobile     Expo / EAS — Android APK / iOS
-  apps/host       Docker + systemd — Raspberry Pi / Linux gateway
+  apps/host       Docker + systemd — Raspberry Pi / Orange Pi / Linux gateway
   packages/mcp    MCP stdio server (get_space_topology)
   docs/           Whitepapers, user manual, S2 AIOS relation
 ```
@@ -46,7 +48,7 @@ mindmap
       Expo APK
       iOS review fixture
     Host
-      Raspberry Pi Docker
+      Raspberry Pi / Orange Pi
       MQTT 1883
     Engines
       22_char S2_DID
@@ -61,7 +63,7 @@ mindmap
 | Engine | Path | What it does |
 | --- | --- | --- |
 | DID / plate screen | `apps/web/src/s2rb_dns_root.ts` | Length 22, SPACSQ checksum, `LOCAL_REJECT` before `fetch()` |
-| Taohuayuan root | `apps/web/src/config.ts` | Cache → local SITE → `TAOHUAYUAN` for MARS/MOON/PHYS/GAME/MYTH |
+| Taohuayuan root | `apps/web/src/taohuayuan.ts` | Cache → local SITE → zone/HTTP Changde root. Miss and fault are not hits. |
 | Red Anchor | `apps/web/src/red_anchor_sandbox.ts` | 14 axes; tactile > 5 N or oxygen < 19.5% → `VETO_SECURITY` |
 | Agent scanner | `apps/web/src/agent_scanner.ts` | Public DID only. No API key in the tree |
 | MQTT mailbox | `apps/web/src/s2rb_tunnel.ts` | `S2/rainbow/<DID>/mail`; media relay NONE |
@@ -69,7 +71,7 @@ mindmap
 | Reviewer | `apps/web/src/reviewer.ts` | `apple@robot0.com` skips LAN |
 | Desktop | `apps/desktop` | Successful handshakes + DID whitelist in local SQLite |
 | Mobile | `apps/mobile` | Home Wi-Fi scan of S2 AIOS `:1884/lan` |
-| Pi host | `apps/host` | Compose: resolver + Mosquitto |
+| Pi / Orange Pi host | `apps/host` | Compose: resolver + Mosquitto |
 
 ## Quick start
 
@@ -98,10 +100,12 @@ npm install
 npm run build:apk
 ```
 
-Raspberry Pi:
+Raspberry Pi / Orange Pi:
 
 ```bash
 cd apps/host
+# Raspberry Pi OS: sudo ./install-pi.sh
+# Orange Pi (Armbian / Orange Pi OS): sudo ./install-opi.sh
 docker compose up -d
 ```
 
@@ -131,7 +135,7 @@ Licensed under the Apache License, Version 2.0. See `LICENSE` and `NOTICE`.
 
 **碳硅共生宇宙的联邦通讯与零信任网关。**
 
-本仓库是独立产品：https://github.com/SpaceSQ/S2RB ，不是 S2 AIOS 里的一个子目录。
+本仓库是独立产品：https://github.com/SpaceSQ/S2RB ，不是 S2 AIOS 里的一个子目录。官网 https://s2rb.space2.world （Vercel 根目录 `apps/web`，默认英文，右上角 EN/中文）：`/` 解析 · `/sandbox` 红锚 · `/host` 树莓派 / 香橙派 · `/about` 合作 · `/notice` 告示。S2 AIOS（房子的操作系统，S2RB 不替代）：https://github.com/SpaceSQ/S2AIOS
 
 ## 背景与意义
 
@@ -148,7 +152,7 @@ S2RB 是这个宇宙的互联网层与最高海关：本机筛 22 位 DID，经�
 | `apps/web` | 网站 / 解析 API（3100） |
 | `apps/desktop` | Windows / macOS 托盘客户端 |
 | `apps/mobile` | Android / iOS |
-| `apps/host` | 树莓派 / Linux Docker 网关 |
+| `apps/host` | 树莓派 / 香橙派 / Linux Docker 网关 |
 | `packages/mcp` | MCP 标准工具 |
 | `docs/` | 白皮书、说明书、与 S2 AIOS 的关联 |
 

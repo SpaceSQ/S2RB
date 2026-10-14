@@ -2,12 +2,12 @@
   "name": "s2rb",
   "version": "1.0.0",
   "private": true,
-  "description": "S2 Rainbow Bridge — independent federation gateway. Web, desktop, mobile, Raspberry Pi host.",
+  "description": "S2 Rainbow Bridge — independent federation gateway. Web, desktop, mobile, Raspberry Pi / Orange Pi host.",
   "engines": {
     "node": ">=22.18"
   },
   "scripts": {
-    "test": "npm test --prefix apps/web && npm test --prefix packages/mcp && npm test --prefix apps/mobile",
+    "test": "npm test --prefix packages/did && npm test --prefix apps/web && npm test --prefix packages/mcp && npm test --prefix apps/mobile && npm test --prefix apps/host && npm test --prefix apps/desktop",
     "dev": "npm run dev --prefix apps/web",
     "build:web": "npm run build --prefix apps/web",
     "mcp": "npm run mcp --prefix apps/web",

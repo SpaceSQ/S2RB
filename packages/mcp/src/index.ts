@@ -18,12 +18,22 @@ export {
   type TopologySpace,
 } from "./topology.ts";
 export {
+  parseJournalPlate,
+  resolveLocalPlate,
+  resolveLocalPlateSync,
+  type PlateHit,
+  type PlateSource,
+} from "./plate.ts";
+export {
   ECOSYSTEM_STANCE,
   ECOSYSTEM_STANCE_EN,
   FUTURE_EXTENSIONS,
   partnerManifest,
   type FutureExtension,
 } from "./partners.ts";
+export { GET_EXTENSION_STATUS, REQUEST_ACTUATION, requestActuation } from "./actuation.ts";
+export { createHorizonQueue, horizonQueue, MAX_INFLIGHT, MAX_TRACE_STEPS } from "./horizon.ts";
+export { admitSkill, auditSkillSource, createSkillCatalog, skillCatalog } from "./skills.ts";
 export {
   peekSpatialContext,
   readSpatialGrant,

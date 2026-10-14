@@ -1,7 +1,12 @@
+import { cleanToken, screenDid, type ScreenedDid } from "../../../packages/did/src/index.ts";
 import { LOCAL_DOMAINS, TAOHUAYUAN_ROOT, type LocalDomain } from "./config.ts";
-import { generateS2CheckSum, parseAddress, parseS2Did, S2_DID_LENGTH } from "./spacsq-seam.ts";
+import { parseAddress } from "./spacsq-seam.ts";
 
-const DID_CHAR = /^[A-Z0-9]{22}$/;
+const HIT_TTL_MS = 10 * 60 * 1000;
+const MISS_TTL_MS = 60 * 1000;
+
+export { cleanToken, screenDid, type ScreenedDid } from "../../../packages/did/src/index.ts";
+
 const SITE_PLATE = /^SITE-[A-Z0-9]{1,32}-[A-Z0-9]{1,32}-[A-Z0-9]{1,32}-ROOM\d{2}-\d{2}$/;
 const RAINBOW_PLATE = /^(MARS|MOON|PHYS|GAME|MYTH)-[A-Z]{2}-\d{3}-[A-Z0-9_]{1,16}-ROOM\d{2}-\d{2}$/;
 const BEARINGS = new Set(["CN", "NA", "NE", "EA", "SE", "SA", "SW", "WA", "NW"]);
@@ -11,13 +16,6 @@ export type ScreenFault = {
   code: "LOCAL_REJECT";
   reason: "DID_LENGTH" | "DID_CHARSET" | "DID_CHECKSUM" | "DID_CLASS" | "ADDRESS" | "DOMAIN";
   upload: false;
-};
-
-export type ScreenedDid = {
-  ok: true;
-  kind: "DID";
-  clean: string;
-  agentClass: string;
 };
 
 export type ScreenedAddress = {
@@ -45,43 +43,38 @@ export type ResolveHit = {
   lane: "CACHE" | "LOCAL" | "TAOHUAYUAN";
   query: string;
   root?: typeof TAOHUAYUAN_ROOT.code;
+  source?: "ZONE" | "HTTP";
+  via?: "LOCAL" | "TAOHUAYUAN";
+  cached?: boolean;
+  address?: string;
 };
 
+export type RootMiss = {
+  ok: false;
+  code: "MISS";
+  query: string;
+  root: typeof TAOHUAYUAN_ROOT.code;
+  upload: false;
+};
+
+export type RootFault = { ok: false; code: "NO_ROOT" | "UPSTREAM"; upload: false };
+
+export type ResolveFault = ScreenFault | RootMiss | RootFault;
+
+export type ResolveResult = ResolveHit | ResolveFault;
+
+export type RootAnswer = ResolveHit | RootMiss | RootFault;
+
 type Cache = {
-  get(query: string): ResolveHit | undefined;
-  put(hit: ResolveHit): void;
+  get(query: string, nowMs?: number): ResolveHit | RootMiss | undefined;
+  putHit(hit: ResolveHit, nowMs?: number): void;
+  putMiss(miss: RootMiss, nowMs?: number): void;
+  forget(query: string): void;
 };
 
 type LocalDump = {
   stash(miss: LocalMiss): void;
 };
-
-export function cleanToken(raw: string): string {
-  return raw.trim().toUpperCase();
-}
-
-/** First gate. Dirty tokens never reach fetch(). */
-export function screenDid(raw: string): ScreenedDid | ScreenFault {
-  const clean = cleanToken(raw);
-  if (clean.length !== S2_DID_LENGTH || clean.length !== 22) {
-    return { ok: false, code: "LOCAL_REJECT", reason: "DID_LENGTH", upload: false };
-  }
-  if (!DID_CHAR.test(clean)) {
-    return { ok: false, code: "LOCAL_REJECT", reason: "DID_CHARSET", upload: false };
-  }
-  const parsed = parseS2Did(clean);
-  if (!parsed.ok) {
-    return { ok: false, code: "LOCAL_REJECT", reason: "DID_CHECKSUM", upload: false };
-  }
-  const seal = generateS2CheckSum(parsed.header, parsed.serial);
-  if (!seal || seal !== parsed.checksum) {
-    return { ok: false, code: "LOCAL_REJECT", reason: "DID_CHECKSUM", upload: false };
-  }
-  if (parsed.agentClass !== "D" && parsed.agentClass !== "V" && parsed.agentClass !== "I" && parsed.agentClass !== "R" && parsed.agentClass !== "A" && parsed.agentClass !== "E") {
-    return { ok: false, code: "LOCAL_REJECT", reason: "DID_CLASS", upload: false };
-  }
-  return { ok: true, kind: "DID", clean, agentClass: parsed.agentClass };
-}
 
 export function screenAddress(raw: string): ScreenedAddress | ScreenFault {
   const clean = cleanToken(raw);
@@ -122,20 +115,63 @@ export function createMemoryDump(): LocalDump & { rows: LocalMiss[] } {
   };
 }
 
-export function createMemoryCache(): Cache & { size: () => number } {
-  const map = new Map<string, ResolveHit>();
+type Stored =
+  | { kind: "HIT"; hit: ResolveHit; untilMs: number }
+  | { kind: "MISS"; miss: RootMiss; untilMs: number };
+
+export function createMemoryCache(options?: { hitTtlMs?: number; missTtlMs?: number }): Cache & { size: () => number } {
+  const map = new Map<string, Stored>();
+  const hitTtl = options?.hitTtlMs ?? HIT_TTL_MS;
+  const missTtl = options?.missTtlMs ?? MISS_TTL_MS;
   return {
-    get: (query) => map.get(query),
-    put(hit) {
-      map.set(hit.query, hit);
+    get(query, nowMs = Date.now()) {
+      const row = map.get(query);
+      if (!row) return undefined;
+      if (row.untilMs <= nowMs) {
+        map.delete(query);
+        return undefined;
+      }
+      if (row.kind === "MISS") return row.miss;
+      const via = row.hit.lane === "CACHE" ? row.hit.via : row.hit.lane;
+      return {
+        ...row.hit,
+        lane: "CACHE",
+        cached: true,
+        via: via === "LOCAL" || via === "TAOHUAYUAN" ? via : undefined,
+      };
+    },
+    putHit(hit, nowMs = Date.now()) {
+      const stored: ResolveHit = { ...hit, lane: hit.lane === "CACHE" ? hit.via ?? "TAOHUAYUAN" : hit.lane };
+      map.set(hit.query, { kind: "HIT", hit: stored, untilMs: nowMs + hitTtl });
+    },
+    putMiss(miss, nowMs = Date.now()) {
+      map.set(miss.query, { kind: "MISS", miss, untilMs: nowMs + missTtl });
+    },
+    forget(query) {
+      map.delete(query);
     },
     size: () => map.size,
   };
 }
 
+let processCache: ReturnType<typeof createMemoryCache> | null = null;
+
+export function resolveCache() {
+  processCache ??= createMemoryCache();
+  return processCache;
+}
+
+export function resolveHttpStatus(result: ResolveResult): number {
+  if (result.ok) return 200;
+  if (result.code === "LOCAL_REJECT") return 422;
+  if (result.code === "MISS") return 404;
+  return 503;
+}
+
 /**
  * Local pre-filter, then cache, then the Taohuayuan root.
  * Failures and non-S2 probes stay in the local dump. They are not a cloud row.
+ * A miss or upstream fault is never stored as a hit.
  */
 export async function resolveQuery(input: {
   raw: string;
@@ -143,22 +179,23 @@ export async function resolveQuery(input: {
   cache?: Cache;
   dump?: LocalDump;
   model?: string;
-  lookup?: (body: CloudLookup) => Promise<ResolveHit>;
-}): Promise<ResolveHit | ScreenFault> {
+  lookup?: (body: CloudLookup) => Promise<RootAnswer>;
+}): Promise<ResolveResult> {
+  const nowMs = input.nowMs ?? Date.now();
   const screened = screenQuery(input.raw);
   if (!screened.ok) {
     input.dump?.stash({
       query: cleanToken(input.raw),
       reason: screened.reason,
-      atMs: input.nowMs ?? Date.now(),
+      atMs: nowMs,
     });
     return screened;
   }
-  const cached = input.cache?.get(screened.clean);
+  const cached = input.cache?.get(screened.clean, nowMs);
   if (cached) return cached;
   if (screened.kind === "ADDRESS" && screened.domain === "SITE") {
     const hit: ResolveHit = { ok: true, lane: "LOCAL", query: screened.clean };
-    input.cache?.put(hit);
+    input.cache?.putHit(hit, nowMs);
     return hit;
   }
   const body: CloudLookup = {
@@ -167,14 +204,14 @@ export async function resolveQuery(input: {
     handshake: "HIT",
     model: redactModel(input.model ?? "s2rb"),
   };
-  if (!input.lookup) {
-    const hit: ResolveHit = { ok: true, lane: "TAOHUAYUAN", query: screened.clean, root: TAOHUAYUAN_ROOT.code };
-    input.cache?.put(hit);
-    return hit;
+  if (!input.lookup) return { ok: false, code: "NO_ROOT", upload: false };
+  const asked = await input.lookup(body);
+  if (asked.ok) {
+    input.cache?.putHit(asked, nowMs);
+    return asked;
   }
-  const hit = await input.lookup(body);
-  input.cache?.put(hit);
-  return hit;
+  if (asked.code === "MISS") input.cache?.putMiss(asked, nowMs);
+  return asked;
 }
 
 export function redactModel(model: string): string {
