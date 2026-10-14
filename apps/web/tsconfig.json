@@ -14,7 +14,13 @@
     "jsx": "preserve",
     "incremental": true,
     "plugins": [{ "name": "next" }],
-    "allowJs": true
+    "allowJs": true,
+    // packages/mcp sits outside this app. Typecheck must use the Vercel install.
+    "baseUrl": ".",
+    "paths": {
+      "zod": ["./node_modules/zod"],
+      "@modelcontextprotocol/sdk/*": ["./node_modules/@modelcontextprotocol/sdk/dist/esm/*"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
