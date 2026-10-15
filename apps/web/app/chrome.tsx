@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import {
   S2AIOS_HOME,
+  S2AIOS_REPO,
   S2RB_AUTHORITY,
   S2RB_HOME,
   S2RB_REPO,
@@ -79,7 +80,7 @@ function SiteFooter() {
       <p className="meta copyright">
         {t("footer.copyright")}
         {" · "}
-        <a href={S2AIOS_HOME}>{t("footer.aios")}</a>
+        <a href={S2AIOS_REPO}>{t("footer.aios")}</a>
       </p>
       <p className="meta">
         {S2RB_SERIES} · {S2RB_AUTHORITY} · <a href={S2RB_HOME}>{S2RB_HOME}</a>

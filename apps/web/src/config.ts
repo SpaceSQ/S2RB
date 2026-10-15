@@ -3,9 +3,10 @@ export const S2RB_SHORT = "S2RB";
 export const S2RB_HOME = "https://s2rb.space2.world";
 export const S2RB_REPO = "https://github.com/SpaceSQ/S2RB";
 export const S2RB_VERCEL = "https://vercel.com/spacesqs-projects/s2-rb";
-/** Documented official S2 AIOS URL. This repo records no separate public hostname. */
-export const S2AIOS_HOME = "https://github.com/SpaceSQ/S2AIOS";
-export const S2AIOS_REPO = S2AIOS_HOME;
+/** Official S2 AIOS site. Bare origin only — a path or directory will not load. */
+export const S2AIOS_HOME = "https://s2aios.space2.world";
+/** Source repository. Footer copyright credit, not the public desk. */
+export const S2AIOS_REPO = "https://github.com/SpaceSQ/S2AIOS";
 
 /** Series plate. Stamped on the public desk and in metadata. */
 export const S2RB_SERIES = "S2-NF-001";

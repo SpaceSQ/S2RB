@@ -3,6 +3,7 @@ import test from "node:test";
 import { FUTURE_EXTENSIONS } from "../../../packages/mcp/src/partners.ts";
 import {
   S2AIOS_HOME,
+  S2AIOS_REPO,
   S2RB_FREE_NOTICE,
   S2RB_FREE_NOTICE_EN,
   S2RB_HOME,
@@ -32,7 +33,8 @@ test("official desk stamps series, home, repo, and documented S2 AIOS URL", () =
   assert.equal(S2RB_SERIES, "S2-NF-001");
   assert.equal(S2RB_HOME, "https://s2rb.space2.world");
   assert.equal(S2RB_REPO, "https://github.com/SpaceSQ/S2RB");
-  assert.equal(S2AIOS_HOME, "https://github.com/SpaceSQ/S2AIOS");
+  assert.equal(S2AIOS_HOME, "https://s2aios.space2.world");
+  assert.equal(S2AIOS_REPO, "https://github.com/SpaceSQ/S2AIOS");
   assert.match(EN["aios.midBody"], /does not replace S2 AIOS/);
   assert.match(ZH["aios.midBody"], /不替代 S2 AIOS/);
   assert.equal(EN["footer.aios"], "S2 AIOS");
