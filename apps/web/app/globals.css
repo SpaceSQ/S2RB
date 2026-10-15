@@ -34,18 +34,49 @@ a:hover { color: var(--green); }
   margin-bottom: 28px;
 }
 
+.gate-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
 .mast {
   display: flex;
+  flex: 1;
+  min-width: 0;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
-  margin-bottom: 14px;
 }
 
 .brand {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: auto;
+  line-height: 0;
+  cursor: pointer;
+  background: transparent;
+  transition: opacity 0.15s ease;
+}
+
+.brand-logo:hover {
+  opacity: 0.8;
+}
+
+.logo-s2rb {
+  display: block;
+  height: 48px;
+  width: auto;
+  background: transparent;
 }
 
 .stamp {
@@ -84,6 +115,7 @@ a:hover { color: var(--green); }
 
 nav {
   display: flex;
+  align-items: center;
   gap: 18px;
   flex-wrap: wrap;
   font-size: 12px;
@@ -236,4 +268,5 @@ pre {
 @media (max-width: 720px) {
   .grid, .radar, .pair, .windows { grid-template-columns: 1fr; }
   .mast { align-items: center; }
+  .logo-s2rb { height: 32px; }
 }

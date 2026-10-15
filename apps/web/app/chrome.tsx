@@ -12,6 +12,7 @@ import {
 } from "../src/config.ts";
 import { PUBLIC_NAV } from "../src/site_copy.ts";
 import { FreeNotice, LocaleProvider, useLocale, type CopyKey } from "./i18n.tsx";
+import { LogoS2RB } from "./logo-s2rb.tsx";
 
 export function SiteRoot({ children }: { children: ReactNode }) {
   return (
@@ -30,19 +31,23 @@ function SiteHeader() {
   const path = usePathname() || "/";
   return (
     <header className="gate">
-      <div className="mast">
-        <div className="brand">
-          <span className="stamp">{t("stamp.gate")}</span>
-          <span className="stamp dim">{S2RB_SERIES}</span>
-          <span className="stamp dim">{S2RB_AUTHORITY}</span>
-        </div>
-        <div className="lang-switch" role="group" aria-label={t("lang.label")}>
-          <button type="button" className={locale === "en" ? "on" : ""} onClick={() => setLocale("en")}>
-            {t("lang.en")}
-          </button>
-          <button type="button" className={locale === "zh" ? "on" : ""} onClick={() => setLocale("zh")}>
-            {t("lang.zh")}
-          </button>
+      <div className="gate-bar">
+        <a className="brand-logo" href="/">
+          <LogoS2RB />
+        </a>
+        <div className="mast">
+          <div className="brand">
+            <span className="stamp dim">{S2RB_SERIES}</span>
+            <span className="stamp dim">{S2RB_AUTHORITY}</span>
+          </div>
+          <div className="lang-switch" role="group" aria-label={t("lang.label")}>
+            <button type="button" className={locale === "en" ? "on" : ""} onClick={() => setLocale("en")}>
+              {t("lang.en")}
+            </button>
+            <button type="button" className={locale === "zh" ? "on" : ""} onClick={() => setLocale("zh")}>
+              {t("lang.zh")}
+            </button>
+          </div>
         </div>
       </div>
       <nav>
