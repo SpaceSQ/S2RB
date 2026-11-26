@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "installCommand": "echo 'Native Node ESM \u2014 zero npm install required'",
+  "buildCommand": "node --test packages/s2rb-core-ts/tests/*.test.mjs",
+  "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/s2RB",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/s2RB/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/S2RB",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/S2RB/",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "pluginId": "taohuayuan-world-s2rb",
+  "version": "3.0.0",
+  "portalUrl": "https://www.taohuayuan.world/s2RB",
+  "genesisHubSuns": "META-CN-001-TAOHUAYUAN2-001-2",
+  "physicalLandmark": "TC-001-ARCH",
+  "sanctuaryCryoMultiplier": 1.5,
+  "allowCurrencyImport": false
+}

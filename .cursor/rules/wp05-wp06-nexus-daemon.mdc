@@ -1,0 +1,23 @@
+---
+description: S2RB v3.0 Constitutional Rules for WP-05 (s2rb-ugo-inventory) & WP-06 (s2rb-daemon + Alt+R Overlay)
+globs: ["crates/s2rb-ugo-inventory/**/*", "crates/s2rb-daemon/**/*", "apps/**/*", "packages/**/*"]
+alwaysApply: true
+---
+
+# S2RB v3.0 WP-05 & WP-06 Constitutional Engineering Rules
+
+1. **4-Domain Relational & Lineage Graph Integrity (`WP-05`)**:
+   - Maintain strict referential integrity across: (a) Carbon-Silicon Ownership & Companion Bonds (`Class D` -> `Class V` with zero currency-transfer delegation), (b) Matriarch-Clone Lineage Trees, (c) Cross-Game Friend Presence & Follow-Jump Berth Allocation (`L6` berths `2..9`), and (d) Taohuayuan Physical OPC Craft Geo-Bindings (`TC-001-ARCH`).
+
+2. **UGO v2.0 Three-Tier Graceful Item Degradation (`WP-05`)**:
+   - Every cross-world item resolves deterministically in any host game without `N x N` custom scripts:
+     - `TIER_A_NATIVE_MECHANIC`: Host allows active backpack items AND supports item's functional primitive (e.g. `PLACEABLE_VOXEL_1M3` -> real 1m3 barrier).
+     - `TIER_B_PASSIVE_AFFIX`: Host allows gear/utility stats but lacks world-building -> projects into bounded buff/talisman.
+     - `TIER_C_COSMETIC_CHARM`: Competitive PvP host (`allow_backpack_items == DISABLED`) -> degrades to zero-stat weapon charm / kill-banner emblem.
+
+3. **Two-Tier Spatial Inventory & Zero-Currency Escrow (`WP-05`)**:
+   - Enforce `9.6 m3` Active Pod Backpack capacity (`<= 36 slots` and `<= 480.0 liters`); route overflow items atomically into the player's Infinite Ark Mother-Stash. Keep origin currencies frozen in `OriginEscrowVault` (`imported_currency_amount == 0.0`).
+
+4. **`s2rbd` Daemon Preemptive `< 3.0 ms` Red Anchor Fuse & `Alt+R` Swapchain Overlay (`WP-06`)**:
+   - `CMD_RED_ANCHOR_FUSE_RECALL` preempts all normal IPC queues, increments `fencing_token` to sever external server locks, latches `E10_VIBRATION = 1.0`, and restores the container to `META-CN-001-TAOHUAYUAN2-001-2` within `<= 3.0 ms`.
+   - Keep Swapchain `Alt+R` Overlay passive (`0` shell draw calls) during normal gameplay, waking `USER_INSPECT_OVERLAY` (`opacity = 0.35`) only while `Alt+R` is toggled open.

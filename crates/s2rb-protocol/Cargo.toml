@@ -1,0 +1,10 @@
+[package]
+name = "s2rb-protocol"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WP-01: S2-DID v4.0, CD-U6A 6-Segment Addressing, 14 Spatial Elements & Silicon Three Laws Kernel"
+
+[lib]
+name = "s2rb_protocol"
+crate-type = ["rlib"]

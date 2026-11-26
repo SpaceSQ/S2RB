@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "s2rb_connector",
+  "version": "3.0.0",
+  "name": "S2 Rainbow Bridge Fabric Connector",
+  "description": "Extracts & admits 2m x 2m x 2.4m (9.6m3) Character Containers with Voxel<->PBR Rig & UGO v2.0 Items",
+  "authors": ["Space2 AIOS", "RobotZero"],
+  "contact": {
+    "homepage": "https://s2rb.space2.world/",
+    "sources": "https://www.taohuayuan.world/s2RB"
+  },
+  "license": "Apache-2.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["world.space2.s2rb.S2RBFabricMod"]
+  }
+}

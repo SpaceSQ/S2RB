@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/s2rb-protocol",
+    "crates/s2rb-container",
+    "crates/s2rb-bridge-core",
+    "crates/s2rb-renderer-kernel",
+    "crates/s2rb-ugo-inventory",
+    "crates/s2rb-daemon",
+    "crates/s2rb-plugin-sdk",
+    "crates/s2rb-genesis-hub",
+]
+
+[workspace.package]
+version = "3.0.0"
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+authors = ["Space2 Architecture Committee", "RobotZero Software (Guangzhou)", "Taohuayuan World Model Lab"]
+repository = "https://github.com/SpaceSQ/S2RB"
+homepage = "https://s2rb.space2.world/"

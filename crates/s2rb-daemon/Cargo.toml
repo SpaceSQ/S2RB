@@ -1,0 +1,21 @@
+[package]
+name = "s2rb-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WP-06: s2rbd Local Sovereign Daemon IPC Bus, <3ms Preemptive Red Anchor Fuse & Cross-Game Alt+R Overlay"
+
+[lib]
+name = "s2rb_daemon"
+crate-type = ["rlib", "cdylib"]
+
+[[bin]]
+name = "s2rbd"
+path = "src/main.rs"
+
+[dependencies]
+s2rb-protocol = { path = "../s2rb-protocol" }
+s2rb-container = { path = "../s2rb-container" }
+s2rb-bridge-core = { path = "../s2rb-bridge-core" }
+s2rb-renderer-kernel = { path = "../s2rb-renderer-kernel" }
+s2rb-ugo-inventory = { path = "../s2rb-ugo-inventory" }

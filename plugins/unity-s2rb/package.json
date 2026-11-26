@@ -1,0 +1,11 @@
+{
+  "name": "world.space2.s2rb.unity",
+  "version": "3.0.0",
+  "displayName": "S2 Rainbow Bridge Unity 6 Connector",
+  "description": "9.6m3 URP/HDRP SDF Clipper, MOBA Competitive Tier-C Fairness Filter & Alt+R Swapchain Overlay",
+  "unity": "6000.0",
+  "Author": {
+    "name": "Space2 AIOS & RobotZero",
+    "url": "https://s2rb.space2.world/"
+  }
+}

@@ -1,0 +1,12 @@
+gateway_id: TC-001-ARCH-EDGE-01
+location: 湖南常德桃源县·桃花源古镇中心广场
+world_suns: PHYS-CN-001-TAOYUANARCH7-001-2
+landmark_code: TC-001-ARCH
+silicon_law1_fuse:
+  force_threshold_newton: 5.0
+  interrupt_sla_ms: 3.0
+  fail_mode: FAIL_OPEN_SANCTUARY_RECALL
+silicon_law2_sensory:
+  min_prism_roughness_pct: 5.0
+economy_firewall:
+  allow_currency_import: false

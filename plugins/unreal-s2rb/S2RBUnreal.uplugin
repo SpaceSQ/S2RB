@@ -1,0 +1,20 @@
+{
+  "FileVersion": 3,
+  "Version": 300,
+  "VersionName": "3.0.0",
+  "FriendlyName": "S2 Rainbow Bridge (9.6m3 Container & dOmega Handoff)",
+  "Description": "Native UE5 RDG 9.6m3 SDF Clipper, Niagara @dOmega Ballistic Handoff & s2rbd Bridge Subsystem",
+  "Category": "Space2.Metaverse",
+  "CreatedBy": "Space2 AIOS & RobotZero",
+  "CreatedByURL": "https://s2rb.space2.world/",
+  "DocsURL": "https://www.taohuayuan.world/s2RB",
+  "EnabledByDefault": true,
+  "CanContainContent": true,
+  "Modules": [
+    {
+      "Name": "S2RBUnreal",
+      "Type": "Runtime",
+      "LoadingPhase": "PostConfigInit"
+    }
+  ]
+}

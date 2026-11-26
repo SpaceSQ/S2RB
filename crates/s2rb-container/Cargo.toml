@@ -1,0 +1,13 @@
+[package]
+name = "s2rb-container"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WP-02: 2.0m x 2.0m x 2.4m (9.6m3) 14-Element Character Container, 6-DoF Kinematics, Boundary Exit Solver & Merkle Chronicle Ledger"
+
+[lib]
+name = "s2rb_container"
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[dependencies]
+s2rb-protocol = { path = "../s2rb-protocol" }

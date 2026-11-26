@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S2RB v3.0 跨游戏 Alt+R 全息呼出浮层与 s2rbd 本地主权守护进程运行舱</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #04070f;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    .mono-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .overlay-glass {
+      background: rgba(8, 13, 26, 0.86);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(34, 211, 238, 0.38);
+      box-shadow: 0 0 45px rgba(6, 182, 212, 0.18);
+    }
+    .rainbow-strip {
+      background: linear-gradient(90deg, #22d3ee, #38bdf8, #818cf8, #c084fc, #f472b6, #fbbf24, #34d399);
+    }
+    .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.35); border-radius: 9999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500/30">
+  <div class="h-1 w-full rainbow-strip"></div>
+
+  <!-- Top Swapchain Host Bar -->
+  <header class="border-b border-slate-800 bg-slate-950/95 px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5 z-30">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center font-black text-xs text-cyan-300 mono-code shrink-0">
+        s2rbd
+      </div>
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <h1 class="text-xs sm:text-sm font-bold text-white truncate">S2RB v3.0 跨游戏交换链浮层 (Swapchain Overlay) &amp; 本地守护进程</h1>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 mono-code">WP-05 &amp; WP-06 LIVE</span>
+        </div>
+        <p class="text-[11px] text-slate-400 truncate">
+          宿主游戏运行中：<span id="hdrHostGameName" class="text-cyan-300 font-semibold">古罗马帝国：军团纪元 (UE5 单机插件)</span> · 地址 <span id="hdrHostSuns" class="mono-code text-amber-300">FILM-WA-009-ROMANEMP2-108-2</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 flex-wrap">
+      <select id="selectHostScene" aria-label="切换当前运行的宿主游戏视口" class="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-200 focus:outline-none focus:border-cyan-400">
+        <option value="rome">宿主视口：古罗马帝国 (UE5单机 · 开放建造)</option>
+        <option value="hok">宿主视口：王者荣耀 (联网竞技 · 禁背包数值)</option>
+        <option value="cs2">宿主视口：CS反恐精英2 (Source2 · 纯枪法公平)</option>
+        <option value="ark">宿主视口：桃花源古镇中心广场·独立方舟母港</option>
+      </select>
+
+      <button id="btnToggleAltR" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold bg-gradient-to-r from-cyan-400 to-indigo-400 hover:brightness-110 text-slate-950 shadow-lg shadow-cyan-500/20 transition">
+        <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+        <span id="btnToggleAltRLabel">按下 [Alt + R] 呼出全息浮层</span>
+      </button>
+
+      <button id="btnHeaderRedAnchor" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold bg-rose-600 hover:bg-rose-500 text-white border border-rose-400/60 shadow-lg shadow-rose-600/25 transition" title="硅基第一定律 5N/3ms 抢占式强制召回">
+        <i data-lucide="octagon-alert" class="w-3.5 h-3.5"></i>
+        <span>3ms 红锚召回</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Interactive Viewport + In-Game Swapchain Overlay -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 py-4 space-y-4">
+    <!-- Live Game Viewport Container -->
+    <div id="viewportWrapper" class="relative w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl" style="min-height: 540px;">
+      <!-- Underlying Host Game 60fps Canvas -->
+      <canvas id="hostGameCanvas" class="w-full h-[540px] block"></canvas>
+
+      <!-- Minimal Unobtrusive Top-Left Telemetry Pill (Always Visible in Swapchain Corner) -->
+      <div class="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
+        <div class="px-2.5 py-1 rounded-lg bg-slate-950/85 border border-slate-700/80 text-[11px] mono-code flex items-center gap-2">
+          <span id="pillStealthDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="pillStealthState" class="text-emerald-300 font-bold">STEALTH_INVISIBLE</span>
+          <span class="text-slate-500">|</span>
+          <span class="text-cyan-300">Opacity: <strong id="pillOpacity">0.00</strong></span>
+          <span class="text-slate-500">|</span>
+          <span class="text-amber-300">Shell DrawCalls: <strong id="pillDrawCalls">0</strong></span>
+        </div>
+        <div class="px-2.5 py-1 rounded-lg bg-slate-950/85 border border-rose-500/40 text-[11px] mono-code text-rose-300">
+          FencingToken: <strong id="pillFencingToken">#1</strong> · 跨界带入货币: <strong>0.00</strong>
+        </div>
+      </div>
+
+      <!-- Bottom In-Game Combat / Boundary Test Bar (Active when Overlay is Closed) -->
+      <div id="gameplayActionDock" class="absolute bottom-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-slate-950/85 border border-slate-800 backdrop-blur-md">
+        <div class="text-xs text-slate-300">
+          <span class="font-bold text-white">正常游玩沉浸态（容器零边框隐形）：</span>点击测试 `9.6m³` 内外战斗效果，或按键盘 <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-600 text-cyan-300 mono-code text-[11px]">Alt + R</kbd> 呼出彩虹桥浮层
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnTestMelee" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-200 border border-cyan-500/30 transition">
+            ⚔️ 近战挥砍 (≤9.6m³闭环)
+          </button>
+          <button id="btnTestProjectile" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-500/25 hover:bg-indigo-500/40 text-indigo-200 border border-indigo-400/40 transition">
+            🎯 远程弹道发射 (@ ∂Ω 破界接力)
+          </button>
+          <button id="btnTestAoe" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/25 hover:bg-amber-500/40 text-amber-200 border border-amber-400/40 transition">
+            ✨ 5.0m 领域光环 (环形破界贴花)
+          </button>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- SWAPCHAIN IN-GAME HOLOGRAPHIC OVERLAY (Toggled via Alt + R)       -->
+      <!-- ================================================================= -->
+      <div id="altROverlayModal" class="hidden absolute inset-0 z-20 p-3 sm:p-5 bg-slate-950/55 backdrop-blur-[4px] flex flex-col justify-between">
+        <div class="overlay-glass rounded-2xl w-full h-full flex flex-col overflow-hidden">
+          <!-- Overlay Header & Sub-Navigation -->
+          <div class="px-4 py-3 bg-slate-950/90 border-b border-cyan-500/30 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2 py-0.5 rounded text-[11px] font-black bg-cyan-500/25 text-cyan-200 border border-cyan-400/50 mono-code">ALT+R OVERLAY</span>
+              <span class="text-xs sm:text-sm font-bold text-white">桃花源全息数字人 · 零号统帅</span>
+              <span class="hidden sm:inline text-[11px] mono-code text-cyan-300">DMILES26112688888888IC</span>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button type="button" data-ovtab="ugo" class="ov-tab-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500/25 text-cyan-200 border border-cyan-400/50 transition">
+                🎒 UGO v2.0 跨界背包
+              </button>
+              <button type="button" data-ovtab="graph" class="ov-tab-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 hover:text-white transition">
+                🕸️ 四维图谱与好友追随
+              </button>
+              <button type="button" data-ovtab="elements" class="ov-tab-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 hover:text-white transition">
+                🧭 14要素空间微生态
+              </button>
+              <button type="button" data-ovtab="daemon" class="ov-tab-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 hover:text-white transition">
+                🛡️ s2rbd IPC 与红锚熔断
+              </button>
+              <button id="btnCloseOverlay" type="button" class="ml-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600">
+                返回游戏 (Esc)
+              </button>
+            </div>
+          </div>
+
+          <!-- Overlay Dynamic Body -->
+          <div class="flex-1 p-4 overflow-y-auto custom-scroll">
+
+            <!-- PANEL 1: UGO v2.0 SPATIAL BACKPACK & ARK MOTHER-STASH -->
+            <div id="ovpanel-ugo" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div class="lg:col-span-7 space-y-3">
+                <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-white">9.6m³ 随身空间背包载荷 (上限 36 格 / 480.0 L)</span>
+                    <span id="podVolumeReadout" class="mono-code text-cyan-300 font-bold">140.7 L / 480.0 L</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div id="podVolumeBar" class="h-full bg-gradient-to-r from-cyan-400 to-indigo-400 transition-all duration-300" style="width: 29%"></div>
+                  </div>
+                  <div class="flex items-center justify-between text-[11px] text-slate-400">
+                    <span id="hostUgoPolicyHint">当前宿主允许激活背包实体原语 (Tier-A 原生机制生效)</span>
+                    <button id="btnSimulateHeavyLoot" type="button" class="text-amber-300 hover:text-amber-200 font-semibold underline">
+                      + 拾取 100 块黑曜石战利品 (测试 480L 自动溢出母库)
+                    </button>
+                  </div>
+                </div>
+
+                <div id="podItemsList" class="space-y-2">
+                  <!-- Populated dynamically with UGO v2.0 3-tier badges -->
+                </div>
+              </div>
+
+              <div class="lg:col-span-5 space-y-3">
+                <!-- Infinite Ark Mother-Stash -->
+                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-indigo-500/35 space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-indigo-200">🏛️ 方舟无限母库 (Ark Infinite Mother-Stash)</span>
+                    <span class="text-[10px] mono-code text-slate-400">原子存取交换</span>
+                  </div>
+                  <div id="arkStashList" class="space-y-2"></div>
+                </div>
+
+                <!-- Segregated Origin Currency Escrow Vault -->
+                <div class="p-3.5 rounded-xl bg-rose-950/45 border border-rose-500/45 space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-rose-200">🔒 原世界分账冻结金库 (Origin Escrow Vault)</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-500/30 text-rose-100 mono-code">带入新世界: 0.00</span>
+                  </div>
+                  <div class="text-[11px] text-rose-100/85 space-y-0.5 mono-code">
+                    <div>• 桃花源通宝: 58,000 (原库安全冻结)</div>
+                    <div>• Minecraft 绿宝石: 640 (原库安全冻结)</div>
+                    <div>• 暴风城金币: 128,500 (原库安全冻结)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL 2: 4D RELATIONAL GRAPH, FOLLOW-JUMP & CLONE LINEAGE -->
+            <div id="ovpanel-graph" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <!-- Cross-Game Friends & 1-Click Follow-Jump -->
+              <div class="lg:col-span-7 space-y-3">
+                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-cyan-500/30 space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-xs sm:text-sm font-bold text-white">🌐 跨游戏好友实时定位与【一键追随穿越 (Follow-Jump)】</h3>
+                    <span class="text-[11px] text-cyan-300 mono-code">自动分配同房相邻空闲 L6 泊位 (2..9)</span>
+                  </div>
+                  <div id="friendsListContainer" class="space-y-2"></div>
+                </div>
+
+                <!-- Carbon-Silicon Bond & Physical OPC Craft Anchor -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-900/85 border border-slate-800 space-y-1">
+                    <div class="font-bold text-emerald-300">🤖 碳硅伴随契约边 (Class-D ↔ Class-V)</div>
+                    <div class="mono-code text-[11px] text-slate-300">副官: VSONAR26112612345678AB</div>
+                    <div class="text-[11px] text-slate-400">授权: 14维声纹雷达 / 小队电台 · 货币权限锁死 FALSE</div>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-900/85 border border-slate-800 space-y-1">
+                    <div class="font-bold text-amber-300">🪪 桃花源古镇 OPC 实体文创锚点</div>
+                    <div class="mono-code text-[11px] text-slate-300">地标: TC-001-ARCH · 桃花玉定气锚</div>
+                    <div class="text-[11px] text-slate-400">NFC 硬件指纹已与当前 9.6m³ 角色容器唯一绑定</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Matriarch-Clone Lineage Tree & CRDT Re-Convergence -->
+              <div class="lg:col-span-5 p-3.5 rounded-xl bg-slate-900/90 border border-violet-500/35 space-y-3">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-xs sm:text-sm font-bold text-violet-200">🧬 母体-复制分身实时谱系树 (Clone/Fork CRDT)</h3>
+                  <span id="matriarchXpBadge" class="text-xs font-bold mono-code text-emerald-300">母体认证 XP: 12,400</span>
+                </div>
+                <p class="text-[11px] text-slate-300">
+                  母体常驻当前视口不断线，可随时向其他游戏世界派生并行分身（自动切分消耗品防双花），并通过 `PN-Counter / OR-Set CRDT` 异步幂等合流经验与融合技能。
+                </p>
+                <div class="flex gap-2">
+                  <button id="btnSpawnCloneFork" type="button" class="flex-1 px-3 py-2 rounded-lg text-xs font-bold bg-violet-500/25 hover:bg-violet-500/40 text-violet-100 border border-violet-400/50 transition">
+                    + 派生跨界并行分身 (#FORK)
+                  </button>
+                  <button id="btnMergeAllClones" type="button" class="flex-1 px-3 py-2 rounded-lg text-xs font-bold bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-100 border border-emerald-400/50 transition">
+                    🔄 CRDT 归元合流全部收益
+                  </button>
+                </div>
+                <div id="activeClonesContainer" class="space-y-2 max-h-48 overflow-y-auto custom-scroll"></div>
+              </div>
+            </div>
+
+            <!-- PANEL 3: 14 SPATIAL ELEMENTS & GAMEPLAY OVERLAY -->
+            <div id="ovpanel-elements" class="hidden space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                <div class="text-xs">
+                  <span class="font-bold text-white">2.0m × 2.0m × 2.4m (9.6m³) 空间十四要素实时耦合场</span>
+                  <span id="envSensorReadout" class="ml-2 mono-code text-cyan-300">舱温 22.5℃ · 氧分压 21.2kPa · 闭环储氧 360s</span>
+                </div>
+                <div class="flex gap-2">
+                  <button id="btnStressVacuumCold" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 border border-amber-400/40 transition">
+                    ⚡ 模拟极寒真空环境冲击 (-55℃ / 0 kPa)
+                  </button>
+                  <button id="btnRestoreTaohuayuan" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-200 border border-emerald-400/40 transition">
+                    🌿 注入桃花源负氧灵气稳态恢复
+                  </button>
+                </div>
+              </div>
+              <div id="elementsGridContainer" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2"></div>
+            </div>
+
+            <!-- PANEL 4: s2rbd IPC BUS STREAM & <3ms RED ANCHOR FUSE -->
+            <div id="ovpanel-daemon" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div class="lg:col-span-5 p-4 rounded-xl bg-gradient-to-br from-rose-950/60 to-slate-900 border border-rose-500/50 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-500 text-white mono-code">SILICON LAW 1 · 5N / 3ms</span>
+                  <span id="lastFuseLatencyBadge" class="text-xs mono-code text-emerald-300">上次熔断耗时: 尚未触发</span>
+                </div>
+                <h3 class="text-sm font-extrabold text-white">碳基主权红锚紧急强制召回器</h3>
+                <p class="text-xs text-rose-100/85 leading-relaxed">
+                  当宿主游戏服务器无响应、遭遇恶意脚本扣押或网络脑裂时，按下下方物理熔断钮，`s2rbd` 守护进程将在 <strong>3.0 毫秒内</strong> 抢占一切队列：递增栅栏令牌作废外部锁、拉满 `E10_VIBRATION = 100%` 护盾，并将角色容器安全拉回<strong>桃花源古镇中心广场母港</strong>。
+                </p>
+                <button id="btnPanelRedAnchor" type="button" class="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition">
+                  🛑 立即执行 &lt;3ms 红锚强制断连召回母港
+                </button>
+              </div>
+
+              <div class="lg:col-span-7 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex flex-col">
+                <div class="px-3.5 py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs">
+                  <span class="font-bold text-cyan-300 mono-code">s2rbd Local Sovereign Daemon · S2RB-IPC/3.0 实时报文流</span>
+                  <span class="text-slate-400 mono-code">Memory &lt; 64MB · Zero Host Crash</span>
+                </div>
+                <div id="daemonIpcLogBox" class="p-3 space-y-1.5 text-[11px] mono-code max-h-60 overflow-y-auto custom-scroll"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Banner -->
+  <div id="overlayToast" class="fixed bottom-4 right-4 z-50 hidden max-w-sm px-4 py-2.5 rounded-xl bg-slate-900/95 border border-cyan-400/50 text-xs font-semibold text-white shadow-2xl"></div>
+
+  <!-- Hidden Preloaded Host Scene Backdrops -->
+  <div class="hidden" aria-hidden="true">
+    <img id="scene_rome" src="user_uploaded_files/ttl=63d/tool_generated/d1_s3.jpg" alt="" />
+    <img id="scene_hok" src="user_uploaded_files/ttl=63d/tool_generated/d2_s3.jpg" alt="" />
+    <img id="scene_cs2" src="user_uploaded_files/ttl=63d/tool_generated/d3_s3.jpg" alt="" />
+    <img id="scene_ark" src="user_uploaded_files/ttl=63d/tool_generated/opt_plaza_hero.jpg" alt="" />
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var WORLDS = {
+        rome: {
+          key: "rome",
+          name: "古罗马帝国：军团纪元 (UE5 单机插件)",
+          suns: "FILM-WA-009-ROMANEMP2-108-2",
+          imgId: "scene_rome",
+          backpackPolicy: "ACTIVE_USE",
+          supportedPrimitives: ["PLACEABLE_BARRIER_1M3", "MELEE_HOLY_CLEAVE", "INSTANT_ABSORPTION_SHIELD"],
+          allowPassiveAffixes: true,
+          coordUnitLabel: "UE5 Left-Z cm",
+          policyHint: "宿主开放 allow_backpack_items=ACTIVE_USE ➔ UGO 激活 Tier-A 原生实体机制！"
+        },
+        hok: {
+          key: "hok",
+          name: "王者荣耀·星界裂隙 (联网权威竞技服)",
+          suns: "GAME-CN-505-HOKCANYON2-001-5",
+          imgId: "scene_hok",
+          backpackPolicy: "DISABLED",
+          supportedPrimitives: [],
+          allowPassiveAffixes: false,
+          coordUnitLabel: "Unity Left-Y m",
+          policyHint: "5v5公平竞技锁死背包属性 ➔ UGO 自动将物品优雅降级为 Tier-C 零数值荣耀徽记！"
+        },
+        cs2: {
+          key: "cs2",
+          name: "CS反恐精英2·战术行动 (Source2 权威服)",
+          suns: "GAME-WA-707-CS2ARENA2-016-4",
+          imgId: "scene_cs2",
+          backpackPolicy: "DISABLED",
+          supportedPrimitives: [],
+          allowPassiveAffixes: false,
+          coordUnitLabel: "Source2 Right-Z inch",
+          policyHint: "纯枪法竞技禁用超自然道具 ➔ UGO 自动将随身神物降级为 Tier-C 步枪护木物理枪饰！"
+        },
+        ark: {
+          key: "ark",
+          name: "桃花源古镇中心广场·独立方舟母港",
+          suns: "META-CN-001-TAOHUAYUAN2-001-2",
+          imgId: "scene_ark",
+          backpackPolicy: "ACTIVE_USE",
+          supportedPrimitives: ["SANCTUARY_AURA_CALM", "PLACEABLE_BARRIER_1M3", "INSTANT_ABSORPTION_SHIELD"],
+          allowPassiveAffixes: true,
+          coordUnitLabel: "S2 Canonical Z-Up m",
+          policyHint: "创世零点母港 (TC-001-ARCH) ➔ 享受 1.5x 负氧灵气休眠温养与全功能母库自由调配"
+        }
+      };
+
+      var UGO_CATALOG = {
+        MAT_OBSIDIAN_BLOCK: {
+          id: "MAT_OBSIDIAN_BLOCK",
+          name: "黑曜石方块 (Minecraft)",
+          unitLiters: 4.0,
+          primitives: ["PLACEABLE_BARRIER_1M3"],
+          tierADesc: "Tier-A 原生机制：可在当前场景直接放置 1m³ 防爆黑曜石掩体 (耐久 4,500)",
+          tierBDesc: "Tier-B 被动护符：爆炸与火焰冲击减免 +15%",
+          tierCDesc: "Tier-C 公平外观：微缩黑曜石棱镜枪饰 / 泉水徽记 (0数值加成)"
+        },
+        CONS_ENCHANTED_GOLDEN_APPLE: {
+          id: "CONS_ENCHANTED_GOLDEN_APPLE",
+          name: "附魔金苹果",
+          unitLiters: 0.5,
+          primitives: ["INSTANT_ABSORPTION_SHIELD"],
+          tierADesc: "Tier-A 原生机制：吞服瞬间展开金色伤害吸收护盾并急速回血",
+          tierBDesc: "Tier-B 被动护符：脱战每秒生命恢复 +1.2%",
+          tierCDesc: "Tier-C 公平外观：流光金苹果武器吊坠 (0数值加成)"
+        },
+        WP_ASHBRINGER_GREATSWORD: {
+          id: "WP_ASHBRINGER_GREATSWORD",
+          name: "灰烬圣剑·复仇之怒",
+          unitLiters: 12.0,
+          primitives: ["MELEE_HOLY_CLEAVE"],
+          tierADesc: "Tier-A 原生机制：双手神圣重劈附带破甲剑罡",
+          tierBDesc: "Tier-B 被动护符：白银之手神圣威能 +18%",
+          tierCDesc: "Tier-C 公平外观：全息圣剑枪托击杀计数器铭牌 (0数值加成)"
+        },
+        REL_TAOHUAYUAN_SPIRIT_JADE: {
+          id: "REL_TAOHUAYUAN_SPIRIT_JADE",
+          name: "桃花源定气桃花玉佩 (TC-001-ARCH)",
+          unitLiters: 0.2,
+          primitives: ["SANCTUARY_AURA_CALM"],
+          tierADesc: "Tier-A 原生机制：展开桃源清心气场，14维声纹清晰度拉满",
+          tierBDesc: "Tier-B 被动护符：技能过热冷却散热效率 +8%",
+          tierCDesc: "Tier-C 公平外观：东方赛博桃花玉步枪挂穗 / 腰间玉佩 (0数值加成)"
+        }
+      };
+
+      var ELEMENT_LIST = [
+        { code: "E01_LUMINA", zh: "光影视觉", val: 0.88 },
+        { code: "E02_ATMOS", zh: "气象微氧", val: 1.00 },
+        { code: "E03_ACOUSTIC", zh: "声纹雷达", val: 0.86 },
+        { code: "E04_THERMAL", zh: "热控稳态", val: 0.92 },
+        { code: "E05_MOMENTUM", zh: "动量韧性", val: 0.85 },
+        { code: "E06_METABOLIC", zh: "法力代谢", val: 0.90 },
+        { code: "E07_BIOSENSOR", zh: "生命体征", val: 1.00 },
+        { code: "E08_WAVE", zh: "频谱侦测", val: 0.84 },
+        { code: "E09_ODOR", zh: "生化免疫", val: 0.82 },
+        { code: "E10_VIBRATION", zh: "护罩刚度", val: 0.95 },
+        { code: "E11_HYDRO", zh: "灵泉补给", val: 0.90 },
+        { code: "E12_MEMORY", zh: "编年记忆", val: 1.00 },
+        { code: "E13_TRUST", zh: "信誉分级", val: 0.92 },
+        { code: "E14_SOVEREIGN", zh: "碳基主权", val: 1.00 }
+      ];
+
+      var FRIENDS = [
+        {
+          did: "DUTHER26112600029910BX",
+          name: "白银圣骑·Uther",
+          worldKey: "rome",
+          roomSuns: "FILM-WA-009-ROMANEMP2-108-2",
+          nextOpenBerthSuns: "FILM-WA-009-ROMANEMP2-108-3",
+          status: "激战古罗马重步兵方阵 (同房空闲泊位 L6=3)"
+        },
+        {
+          did: "DALEX026112600010842AZ",
+          name: "峡谷游侠·Alex",
+          worldKey: "hok",
+          roomSuns: "GAME-CN-505-HOKCANYON2-001-5",
+          nextOpenBerthSuns: "GAME-CN-505-HOKCANYON2-001-6",
+          status: "5v5中路河道团战中 (同房空闲泊位 L6=6)"
+        },
+        {
+          did: "DLIN0126112600000707CT",
+          name: "特警队长·Lin",
+          worldKey: "cs2",
+          roomSuns: "GAME-WA-707-CS2ARENA2-016-4",
+          nextOpenBerthSuns: "GAME-WA-707-CS2ARENA2-016-5",
+          status: "B包点烟雾协同拆弹中 (同房空闲泊位 L6=5)"
+        }
+      ];
+
+      var state = {
+        worldKey: "rome",
+        currentSuns: WORLDS.rome.suns,
+        fencingToken: 1,
+        overlayOpen: false,
+        activeOvTab: "ugo",
+        ceremonyTimer: 0.0,
+        redAnchorWakeTimer: 0.0,
+
+        // Pod Inventory (480L cap) & Ark Stash
+        podBag: {
+          MAT_OBSIDIAN_BLOCK: 32,
+          CONS_ENCHANTED_GOLDEN_APPLE: 8,
+          WP_ASHBRINGER_GREATSWORD: 1,
+          REL_TAOHUAYUAN_SPIRIT_JADE: 1
+        },
+        arkStash: {
+          MAT_OBSIDIAN_BLOCK: 120,
+          CONS_ENCHANTED_GOLDEN_APPLE: 15
+        },
+
+        // Clone / Fork Lineage
+        certifiedXp: 12400,
+        forkSeq: 1,
+        activeClones: [
+          {
+            forkId: "DMILES...88IC#FORK-HOKCANYON-0001",
+            worldName: "王者荣耀·星界裂隙",
+            pendingXp: 1820,
+            pendingSkill: "【圣光裁决·主宰先锋圣盾】"
+          }
+        ],
+
+        // Environment Sensors
+        tempC: 22.5,
+        o2Kpa: 21.2,
+        o2Sec: 360,
+
+        // Canvas VFX pulses
+        activeVfx: null,
+        ipcLogs: [
+          "[S2RB-IPC/3.0] s2rbd 守护进程已挂载交换链钩子 · 内存占用 41.2 MB",
+          "[NEXUS-GRAPH] 碳硅契约边 DMILES...88IC <-> VSONAR...78AB 已锁定 (货币委托=FALSE)",
+          "[SINGLETON-2PC] 持有排他栅栏租约令牌 #1 @ FILM-WA-009-ROMANEMP2-108-2"
+        ]
+      };
+
+      var toastTimer = null;
+      function showToast(msg) {
+        var el = document.getElementById("overlayToast");
+        el.textContent = msg;
+        el.classList.remove("hidden");
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { el.classList.add("hidden"); }, 3200);
+      }
+
+      function logIpc(msg) {
+        var d = new Date();
+        var ts = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0");
+        state.ipcLogs.unshift("[" + ts + "] " + msg);
+        if (state.ipcLogs.length > 35) state.ipcLogs.length = 35;
+        renderDaemonPanel();
+      }
+
+      function translateUgoItem(ugoId) {
+        var spec = UGO_CATALOG[ugoId];
+        var w = WORLDS[state.worldKey];
+        if (w.backpackPolicy === "ACTIVE_USE") {
+          for (var i = 0; i < spec.primitives.length; i++) {
+            if (w.supportedPrimitives.indexOf(spec.primitives[i]) !== -1) {
+              return { tier: "TIER-A", cls: "bg-emerald-500/20 text-emerald-300 border-emerald-400/40", desc: spec.tierADesc };
+            }
+          }
+          if (w.allowPassiveAffixes) {
+            return { tier: "TIER-B", cls: "bg-amber-500/20 text-amber-300 border-amber-400/40", desc: spec.tierBDesc };
+          }
+        }
+        return { tier: "TIER-C", cls: "bg-cyan-500/20 text-cyan-200 border-cyan-400/40", desc: spec.tierCDesc };
+      }
+
+      function computePodVolume() {
+        var sum = 0;
+        var keys = Object.keys(state.podBag);
+        for (var i = 0; i < keys.length; i++) {
+          var k = keys[i];
+          sum += (state.podBag[k] || 0) * UGO_CATALOG[k].unitLiters;
+        }
+        return Number(sum.toFixed(1));
+      }
+
+      function currentEnvelopeTelemetry() {
+        if (state.redAnchorWakeTimer > 0) {
+          return { mode: "RED_ANCHOR_WAKEUP", opacity: 0.85, drawCalls: 1, dotCls: "bg-rose-500 animate-ping" };
+        }
+        if (state.overlayOpen) {
+          return { mode: "USER_INSPECT_OVERLAY", opacity: 0.35, drawCalls: 1, dotCls: "bg-cyan-400 animate-pulse" };
+        }
+        if (state.ceremonyTimer > 0) {
+          return { mode: "CEREMONY_VISIBLE", opacity: 0.92, drawCalls: 1, dotCls: "bg-amber-400 animate-pulse" };
+        }
+        return { mode: "STEALTH_INVISIBLE", opacity: 0.00, drawCalls: 0, dotCls: "bg-emerald-400" };
+      }
+
+      function updateHeaderAndPills() {
+        var w = WORLDS[state.worldKey];
+        document.getElementById("hdrHostGameName").textContent = w.name;
+        document.getElementById("hdrHostSuns").textContent = state.currentSuns;
+        document.getElementById("selectHostScene").value = state.worldKey;
+
+        var tel = currentEnvelopeTelemetry();
+        document.getElementById("pillStealthDot").className = "w-2 h-2 rounded-full " + tel.dotCls;
+        document.getElementById("pillStealthState").textContent = tel.mode;
+        document.getElementById("pillOpacity").textContent = tel.opacity.toFixed(2);
+        document.getElementById("pillDrawCalls").textContent = String(tel.drawCalls);
+        document.getElementById("pillFencingToken").textContent = "#" + state.fencingToken;
+
+        document.getElementById("btnToggleAltRLabel").textContent = state.overlayOpen
+          ? "收起 [Alt + R] 浮层 (返回隐形)"
+          : "按下 [Alt + R] 呼出全息浮层";
+
+        var modal = document.getElementById("altROverlayModal");
+        var dock = document.getElementById("gameplayActionDock");
+        if (state.overlayOpen) {
+          modal.classList.remove("hidden");
+          dock.classList.add("hidden");
+        } else {
+          modal.classList.add("hidden");
+          dock.classList.remove("hidden");
+        }
+      }
+
+      function renderUgoPanel() {
+        var vol = computePodVolume();
+        document.getElementById("podVolumeReadout").textContent = vol.toFixed(1) + " L / 480.0 L";
+        document.getElementById("podVolumeBar").style.width = Math.min(100, Math.round((vol / 480.0) * 100)) + "%";
+        document.getElementById("hostUgoPolicyHint").textContent = WORLDS[state.worldKey].policyHint;
+
+        var podHtml = "";
+        var keys = Object.keys(UGO_CATALOG);
+        for (var i = 0; i < keys.length; i++) {
+          var id = keys[i];
+          var qty = state.podBag[id] || 0;
+          if (qty <= 0) continue;
+          var spec = UGO_CATALOG[id];
+          var tr = translateUgoItem(id);
+          podHtml += '<div class="p-2.5 rounded-xl bg-slate-900/85 border border-slate-800 flex flex-wrap items-center justify-between gap-2">' +
+            '<div class="min-w-0 flex-1 space-y-0.5">' +
+            '<div class="flex items-center gap-2 flex-wrap">' +
+            '<span class="text-xs font-bold text-white">' + spec.name + ' × ' + qty + '</span>' +
+            '<span class="px-2 py-0.5 rounded text-[10px] font-bold border mono-code ' + tr.cls + '">' + tr.tier + '</span>' +
+            '<span class="text-[10px] mono-code text-slate-400">(' + (qty * spec.unitLiters).toFixed(1) + ' L)</span>' +
+            '</div>' +
+            '<p class="text-[11px] text-slate-300">' + tr.desc + '</p>' +
+            '</div>' +
+            '<button type="button" data-to-ark="' + id + '" class="btn-to-ark px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-800 hover:bg-indigo-500/30 text-indigo-200 border border-indigo-400/35 shrink-0 transition">' +
+            '存入母库 ➔' +
+            '</button>' +
+            '</div>';
+        }
+        var podBox = document.getElementById("podItemsList");
+        podBox.innerHTML = podHtml || '<div class="text-xs text-slate-400 p-3">随身背包暂无物品，可从右侧方舟母库取出</div>';
+
+        var arkHtml = "";
+        for (var j = 0; j < keys.length; j++) {
+          var aid = keys[j];
+          var aqty = state.arkStash[aid] || 0;
+          if (aqty <= 0) continue;
+          arkHtml += '<div class="p-2 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between gap-2 text-xs">' +
+            '<span class="text-slate-200 truncate">' + UGO_CATALOG[aid].name + ' <strong class="mono-code text-indigo-300">×' + aqty + '</strong></span>' +
+            '<button type="button" data-to-pod="' + aid + '" class="btn-to-pod px-2 py-1 rounded bg-indigo-500/20 hover:bg-indigo-500/35 text-indigo-200 border border-indigo-400/30 text-[11px] shrink-0 transition">⬅ 取出</button>' +
+            '</div>';
+        }
+        var arkBox = document.getElementById("arkStashList");
+        arkBox.innerHTML = arkHtml || '<div class="text-xs text-slate-500">母库暂无存货</div>';
+
+        var toArkBtns = podBox.querySelectorAll(".btn-to-ark");
+        for (var b = 0; b < toArkBtns.length; b++) {
+          toArkBtns[b].addEventListener("click", function () {
+            var itemId = this.getAttribute("data-to-ark");
+            var moveQty = Math.min(state.podBag[itemId] || 0, 5);
+            if (moveQty <= 0) return;
+            state.podBag[itemId] -= moveQty;
+            if (state.podBag[itemId] <= 0) delete state.podBag[itemId];
+            state.arkStash[itemId] = (state.arkStash[itemId] || 0) + moveQty;
+            logIpc("[ARK-STASH] 原子转入方舟无限母库: " + UGO_CATALOG[itemId].name + " x" + moveQty);
+            renderUgoPanel();
+          });
+        }
+
+        var toPodBtns = arkBox.querySelectorAll(".btn-to-pod");
+        for (var p = 0; p < toPodBtns.length; p++) {
+          toPodBtns[p].addEventListener("click", function () {
+            var itemId = this.getAttribute("data-to-pod");
+            var spec = UGO_CATALOG[itemId];
+            var availL = Math.max(0, 480.0 - computePodVolume());
+            var maxFit = Math.floor(availL / spec.unitLiters);
+            var want = Math.min(5, state.arkStash[itemId] || 0);
+            var fit = Math.min(want, maxFit);
+            if (fit <= 0) {
+              showToast("9.6m³ 随身空间背包已达 480.0L 满载上限，请先存入其他重物！");
+              return;
+            }
+            state.arkStash[itemId] -= fit;
+            state.podBag[itemId] = (state.podBag[itemId] || 0) + fit;
+            logIpc("[ARK-STASH] 从母库调入 9.6m³ 随身舱: " + spec.name + " x" + fit);
+            renderUgoPanel();
+          });
+        }
+      }
+
+      function renderGraphPanel() {
+        document.getElementById("matriarchXpBadge").textContent = "母体认证 XP: " + state.certifiedXp.toLocaleString();
+
+        var fHtml = "";
+        for (var i = 0; i < FRIENDS.length; i++) {
+          var f = FRIENDS[i];
+          fHtml += '<div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2">' +
+            '<div class="min-w-0">' +
+            '<div class="text-xs font-bold text-white">' + f.name + ' <span class="text-[10px] mono-code text-cyan-300 ml-1">' + f.did + '</span></div>' +
+            '<div class="text-[11px] text-slate-400">' + f.status + '</div>' +
+            '</div>' +
+            '<button type="button" data-fidx="' + i + '" class="btn-follow-friend px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500/25 hover:bg-cyan-500/40 text-cyan-100 border border-cyan-400/50 shrink-0 transition">' +
+            '⚡ 一键追随穿越' +
+            '</button>' +
+            '</div>';
+        }
+        var fBox = document.getElementById("friendsListContainer");
+        fBox.innerHTML = fHtml;
+
+        var fBtns = fBox.querySelectorAll(".btn-follow-friend");
+        for (var b = 0; b < fBtns.length; b++) {
+          fBtns[b].addEventListener("click", function () {
+            var fObj = FRIENDS[parseInt(this.getAttribute("data-fidx"), 10)];
+            state.fencingToken += 1;
+            state.worldKey = fObj.worldKey;
+            state.currentSuns = fObj.nextOpenBerthSuns;
+            state.overlayOpen = false;
+            state.ceremonyTimer = 3.0;
+            logIpc("[FOLLOW-JUMP] 分配相邻空闲泊位 " + fObj.nextOpenBerthSuns + " · 单体2PC跃迁完成 (栅栏令牌 #" + state.fencingToken + ")");
+            updateHeaderAndPills();
+            renderUgoPanel();
+            showToast("⚡ 已追随好友【" + fObj.name + "】空降至相邻泊位 " + fObj.nextOpenBerthSuns + "！");
+          });
+        }
+
+        var cBox = document.getElementById("activeClonesContainer");
+        if (state.activeClones.length === 0) {
+          cBox.innerHTML = '<div class="p-3 rounded-lg bg-slate-950 border border-dashed border-slate-800 text-xs text-slate-400 text-center">当前无外派分身，点击上方按钮可派生跨界并行分身</div>';
+        } else {
+          var cHtml = "";
+          for (var c = 0; c < state.activeClones.length; c++) {
+            var cl = state.activeClones[c];
+            cHtml += '<div class="p-2.5 rounded-lg bg-slate-950 border border-violet-500/30 space-y-1 text-xs">' +
+              '<div class="flex items-center justify-between">' +
+              '<span class="font-bold text-violet-200 mono-code truncate">' + cl.forkId + '</span>' +
+              '<span class="text-emerald-300 mono-code shrink-0">+' + cl.pendingXp + ' XP</span>' +
+              '</div>' +
+              '<div class="text-[11px] text-slate-400">驻留: ' + cl.worldName + ' · 待合流: ' + cl.pendingSkill + '</div>' +
+              '</div>';
+          }
+          cBox.innerHTML = cHtml;
+        }
+      }
+
+      function renderElementsPanel() {
+        document.getElementById("envSensorReadout").textContent =
+          "舱温 " + state.tempC.toFixed(1) + "℃ · 氧分压 " + state.o2Kpa.toFixed(1) + "kPa · 闭环储氧 " + state.o2Sec + "s";
+        var html = "";
+        for (var i = 0; i < ELEMENT_LIST.length; i++) {
+          var el = ELEMENT_LIST[i];
+          var pct = Math.round(el.val * 100);
+          html += '<div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">' +
+            '<div class="text-[10px] mono-code text-cyan-300 truncate">' + el.code + '</div>' +
+            '<div class="text-xs font-bold text-white flex justify-between"><span>' + el.zh + '</span><span class="mono-code">' + pct + '%</span></div>' +
+            '<div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden"><div class="h-full bg-cyan-400" style="width:' + pct + '%"></div></div>' +
+            '</div>';
+        }
+        document.getElementById("elementsGridContainer").innerHTML = html;
+      }
+
+      function renderDaemonPanel() {
+        var box = document.getElementById("daemonIpcLogBox");
+        var html = "";
+        for (var i = 0; i < state.ipcLogs.length; i++) {
+          var line = state.ipcLogs[i];
+          var cls = line.indexOf("RED-ANCHOR") !== -1 ? "text-rose-300 font-bold" : "text-slate-300";
+          html += '<div class="' + cls + '">' + line + '</div>';
+        }
+        box.innerHTML = html;
+      }
+
+      function executeRedAnchorRecall() {
+        var t0 = performance.now();
+        state.fencingToken += 1;
+        state.worldKey = "ark";
+        state.currentSuns = WORLDS.ark.suns;
+        state.overlayOpen = false;
+        state.redAnchorWakeTimer = 2.6;
+        ELEMENT_LIST[9].val = 1.00; // E10_VIBRATION = 100%
+        var elapsed = Math.max(0.08, performance.now() - t0);
+
+        document.getElementById("lastFuseLatencyBadge").textContent =
+          "上次熔断耗时: " + elapsed.toFixed(2) + " ms (符合 <=3.0ms 铁律)";
+        logIpc("[RED-ANCHOR-FUSE] 抢占式熔断完成 (" + elapsed.toFixed(2) + "ms <= 3.0ms)！吊销外部会话，栅栏令牌升至 #" + state.fencingToken + "，已安全撤回桃花源母港 META-CN-001-TAOHUAYUAN2-001-2");
+        updateHeaderAndPills();
+        renderUgoPanel();
+        renderElementsPanel();
+        showToast("🛑 红锚 3ms 强制召回完成 (" + elapsed.toFixed(2) + "ms)！已安全返回桃花源古镇母港");
+      }
+
+      function switchOvTab(tab) {
+        state.activeOvTab = tab;
+        var all = ["ugo", "graph", "elements", "daemon"];
+        for (var i = 0; i < all.length; i++) {
+          var p = document.getElementById("ovpanel-" + all[i]);
+          if (all[i] === tab) p.classList.remove("hidden");
+          else p.classList.add("hidden");
+        }
+        var btns = document.querySelectorAll(".ov-tab-btn");
+        for (var b = 0; b < btns.length; b++) {
+          var isAct = btns[b].getAttribute("data-ovtab") === tab;
+          btns[b].className = isAct
+            ? "ov-tab-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500/25 text-cyan-200 border border-cyan-400/50 transition"
+            : "ov-tab-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 hover:text-white transition";
+        }
+      }
+
+      function toggleAltROverlay(forceState) {
+        state.overlayOpen = typeof forceState === "boolean" ? forceState : !state.overlayOpen;
+        if (state.overlayOpen) {
+          state.ceremonyTimer = 0.0; // Crisp 0.35 inspection opacity immediately
+          logIpc("[CMD_TOGGLE_ALT_R] 唤醒交换链浮层 (USER_INSPECT_OVERLAY, Opacity=0.35)");
+          renderUgoPanel();
+          renderGraphPanel();
+          renderElementsPanel();
+          renderDaemonPanel();
+        } else {
+          logIpc("[CMD_TOGGLE_ALT_R] 收起交换链浮层 -> 恢复正常游玩完全隐形态 (Opacity=0.00, DrawCalls=0)");
+        }
+        updateHeaderAndPills();
+      }
+
+      // =======================================================================
+      // 60FPS HOST VIEWPORT CANVAS + 9.6m3 PRISM POD & @ dOmega VFX RENDERER
+      // =======================================================================
+      var lastTs = 0;
+      function resizeCanvas() {
+        var wrap = document.getElementById("viewportWrapper");
+        var canvas = document.getElementById("hostGameCanvas");
+        var rect = wrap.getBoundingClientRect();
+        canvas.width = Math.max(320, Math.floor(rect.width));
+        canvas.height = 540;
+      }
+
+      function renderViewportLoop(ts) {
+        if (!lastTs) lastTs = ts;
+        var dt = Math.min(0.1, (ts - lastTs) / 1000);
+        lastTs = ts;
+
+        var prevCer = state.ceremonyTimer > 0;
+        var prevRed = state.redAnchorWakeTimer > 0;
+        if (state.ceremonyTimer > 0) state.ceremonyTimer = Math.max(0, state.ceremonyTimer - dt);
+        if (state.redAnchorWakeTimer > 0) state.redAnchorWakeTimer = Math.max(0, state.redAnchorWakeTimer - dt);
+        if ((prevCer && state.ceremonyTimer === 0) || (prevRed && state.redAnchorWakeTimer === 0)) {
+          updateHeaderAndPills();
+        }
+
+        var canvas = document.getElementById("hostGameCanvas");
+        var ctx = canvas.getContext("2d");
+        var cw = canvas.width;
+        var ch = canvas.height;
+        var wObj = WORLDS[state.worldKey];
+        var img = document.getElementById(wObj.imgId);
+
+        ctx.clearRect(0, 0, cw, ch);
+        if (img && img.complete && img.naturalWidth) {
+          var scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight) * (1.03 + 0.015 * Math.sin(ts * 0.0008));
+          var dw = img.naturalWidth * scale;
+          var dh = img.naturalHeight * scale;
+          ctx.drawImage(img, (cw - dw) * 0.5, (ch - dh) * 0.5, dw, dh);
+        } else {
+          ctx.fillStyle = "#080f1e";
+          ctx.fillRect(0, 0, cw, ch);
+        }
+
+        // Subtle vignette
+        var grad = ctx.createRadialGradient(cw * 0.5, ch * 0.5, cw * 0.18, cw * 0.5, ch * 0.5, cw * 0.7);
+        grad.addColorStop(0, "rgba(4,8,18,0.05)");
+        grad.addColorStop(1, "rgba(4,8,18,0.68)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, cw, ch);
+
+        // 2.0m x 2.0m x 2.4m (9.6m3) Prism Envelope Wireframe ONLY when shellOpacity > 0!
+        var tel = currentEnvelopeTelemetry();
+        var cx = cw * 0.5;
+        var cy = ch * 0.52;
+        var boxW = Math.min(220, cw * 0.24);
+        var boxH = boxW * 1.2; // 2.0m : 2.4m aspect ratio!
+
+        if (tel.opacity > 0.001) {
+          ctx.save();
+          ctx.globalAlpha = tel.opacity;
+          ctx.strokeStyle = state.redAnchorWakeTimer > 0 ? "#fb7185" : "#22d3ee";
+          ctx.lineWidth = 2.2;
+          ctx.strokeRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
+          ctx.fillStyle = state.redAnchorWakeTimer > 0 ? "rgba(244, 63, 94, 0.14)" : "rgba(34, 211, 238, 0.10)";
+          ctx.fillRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
+
+          ctx.font = "bold 11px monospace";
+          ctx.fillStyle = "#a5f3fc";
+          ctx.fillText("2.0m×2.0m×2.4m (9.6m³) DLSR POD", cx - boxW * 0.5, cy - boxH * 0.5 - 8);
+          ctx.restore();
+        }
+
+        // Render active Combat / @ dOmega Boundary Test VFX
+        if (state.activeVfx) {
+          state.activeVfx.elapsed += dt;
+          var p = state.activeVfx.elapsed / state.activeVfx.duration;
+          if (p >= 1.0) {
+            state.activeVfx = null;
+          } else {
+            ctx.save();
+            if (state.activeVfx.kind === "melee") {
+              // Strictly contained inside [-boxW/2, +boxW/2]!
+              ctx.strokeStyle = "#38bdf8";
+              ctx.lineWidth = 4;
+              ctx.globalAlpha = 1.0 - p;
+              ctx.beginPath();
+              ctx.arc(cx, cy, boxW * 0.42 * p + 18, -0.9, 0.9);
+              ctx.stroke();
+              ctx.font = "bold 12px monospace";
+              ctx.fillStyle = "#67e8f9";
+              ctx.fillText("CONTAINED_INSIDE_9M6 (0 宿主实体开销)", cx - 115, cy - boxH * 0.5 - 12);
+            } else if (state.activeVfx.kind === "projectile") {
+              var exitX = cx + boxW * 0.5;
+              var endX = cw - 30;
+              var curX = cx + (endX - cx) * p;
+              // Container segment (cyan) vs Host-handed-off segment (amber)
+              ctx.lineWidth = 3;
+              ctx.strokeStyle = "#22d3ee";
+              ctx.beginPath();
+              ctx.moveTo(cx, cy);
+              ctx.lineTo(Math.min(curX, exitX), cy);
+              ctx.stroke();
+
+              if (curX > exitX) {
+                ctx.strokeStyle = "#fbbf24";
+                ctx.beginPath();
+                ctx.moveTo(exitX, cy);
+                ctx.lineTo(curX, cy);
+                ctx.stroke();
+
+                ctx.fillStyle = "#f43f5e";
+                ctx.beginPath();
+                ctx.arc(exitX, cy, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.font = "bold 11px monospace";
+                ctx.fillStyle = "#fde68a";
+                ctx.fillText("@ ∂Ω 破界交接点 (" + wObj.coordUnitLabel + ") ➔ 宿主引擎弹道接力!", exitX - 60, cy - 14);
+              }
+            } else if (state.activeVfx.kind === "aoe") {
+              // Inner 9.6m3 core + Outer annular ground ring
+              var outerR = boxW * 1.45 * Math.min(1, p * 1.6);
+              ctx.strokeStyle = "#c084fc";
+              ctx.lineWidth = 3;
+              ctx.globalAlpha = 1.0 - p * 0.75;
+              ctx.beginPath();
+              ctx.ellipse(cx, cy + boxH * 0.35, outerR, outerR * 0.38, 0, 0, Math.PI * 2);
+              ctx.stroke();
+              ctx.font = "bold 12px monospace";
+              ctx.fillStyle = "#e9d5ff";
+              ctx.fillText("EXTERNAL_ANNULAR_GROUND_AOE [1.0m..5.0m 宿主地形环形贴花]", cx - 175, cy + boxH * 0.5 + 24);
+            }
+            ctx.restore();
+          }
+        }
+
+        window.requestAnimationFrame(renderViewportLoop);
+      }
+
+      function bindEvents() {
+        // Real Keyboard Alt+R & Escape shortcuts!
+        window.addEventListener("keydown", function (e) {
+          if (e.altKey && (e.code === "KeyR" || e.key === "r" || e.key === "R")) {
+            e.preventDefault();
+            toggleAltROverlay();
+          } else if (e.key === "Escape" && state.overlayOpen) {
+            toggleAltROverlay(false);
+          }
+        });
+
+        document.getElementById("btnToggleAltR").addEventListener("click", function () {
+          toggleAltROverlay();
+        });
+        document.getElementById("btnCloseOverlay").addEventListener("click", function () {
+          toggleAltROverlay(false);
+        });
+
+        document.getElementById("selectHostScene").addEventListener("change", function () {
+          var nextKey = this.value;
+          state.fencingToken += 1;
+          state.worldKey = nextKey;
+          state.currentSuns = WORLDS[nextKey].suns;
+          state.ceremonyTimer = 3.0;
+          logIpc("[CMD_FAST_LOCAL_JUMP] 单体2PC跃迁至 " + WORLDS[nextKey].name + " (令牌 #" + state.fencingToken + ", 带入货币=0.00)");
+          updateHeaderAndPills();
+          renderUgoPanel();
+          showToast("已跃迁至 " + WORLDS[nextKey].name + " (3秒棱镜仪式后自动隐形)");
+        });
+
+        // Overlay tabs
+        var tabBtns = document.querySelectorAll(".ov-tab-btn");
+        for (var i = 0; i < tabBtns.length; i++) {
+          tabBtns[i].addEventListener("click", function () {
+            switchOvTab(this.getAttribute("data-ovtab"));
+          });
+        }
+
+        // Heavy Loot 480L Auto-Overflow Test
+        document.getElementById("btnSimulateHeavyLoot").addEventListener("click", function () {
+          var availL = Math.max(0, 480.0 - computePodVolume());
+          var fitBlocks = Math.min(100, Math.floor(availL / 4.0));
+          var overflowBlocks = 100 - fitBlocks;
+          if (fitBlocks > 0) state.podBag.MAT_OBSIDIAN_BLOCK = (state.podBag.MAT_OBSIDIAN_BLOCK || 0) + fitBlocks;
+          if (overflowBlocks > 0) state.arkStash.MAT_OBSIDIAN_BLOCK = (state.arkStash.MAT_OBSIDIAN_BLOCK || 0) + overflowBlocks;
+          logIpc("[UGO-OVERFLOW] 拾取 100 块黑曜石 (400L) ➔ 随身舱装入 " + fitBlocks + " 块，超出容量 " + overflowBlocks + " 块自动转入方舟无限母库！");
+          renderUgoPanel();
+          showToast("已装入随身舱 " + fitBlocks + " 块，超重 " + overflowBlocks + " 块已自动路由至方舟母库！");
+        });
+
+        // Clone Fork & CRDT Merge
+        document.getElementById("btnSpawnCloneFork").addEventListener("click", function () {
+          if ((state.podBag.CONS_ENCHANTED_GOLDEN_APPLE || 0) < 1) {
+            showToast("随身舱附魔金苹果不足 1 颗，无法切分消耗品配额！");
+            return;
+          }
+          state.podBag.CONS_ENCHANTED_GOLDEN_APPLE -= 1;
+          state.forkSeq += 1;
+          var forkId = "DMILES...88IC#FORK-CS2ARENA-" + String(state.forkSeq).padStart(4, "0");
+          state.activeClones.unshift({
+            forkId: forkId,
+            worldName: "CS反恐精英2·战术行动",
+            pendingXp: 1560,
+            pendingSkill: "【硅基全息声纹透视脉冲】"
+          });
+          logIpc("[CLONE-FORK] 派生并行分身 " + forkId + " (托管锁定 1 颗金苹果防刷物)");
+          renderGraphPanel();
+          renderUgoPanel();
+          showToast("🧬 已派生并行分身 " + forkId + "，母体继续留在当前世界不断线！");
+        });
+
+        document.getElementById("btnMergeAllClones").addEventListener("click", function () {
+          if (state.activeClones.length === 0) {
+            showToast("当前没有待合流的外派分身");
+            return;
+          }
+          var gained = 0;
+          for (var i = 0; i < state.activeClones.length; i++) {
+            gained += state.activeClones[i].pendingXp;
+          }
+          var count = state.activeClones.length;
+          state.certifiedXp += gained;
+          state.activeClones = [];
+          logIpc("[CRDT-MERGE] 幂等合流 " + count + " 具分身 ➔ PN-Counter 累加 +" + gained + " XP 至母体！");
+          renderGraphPanel();
+          showToast("🔄 CRDT 归元合流完成！母体净增 +" + gained + " 认证经验");
+        });
+
+        // 14-Element Coupling Stress & Restore
+        document.getElementById("btnStressVacuumCold").addEventListener("click", function () {
+          state.tempC = -55.0;
+          state.o2Kpa = 0.0;
+          state.o2Sec = 312;
+          ELEMENT_LIST[1].val = 0.86;
+          ELEMENT_LIST[3].val = 0.34;
+          ELEMENT_LIST[5].val = 0.68;
+          logIpc("[14D-COUPLING] 遭遇 -55℃ 真空冲击 ➔ E02 微氧闭环池接管呼吸，E04->E06 代谢耦合已激活");
+          renderElementsPanel();
+          showToast("⚡ 9.6m³ 微氧维生池已接管呼吸 (剩余 312s)！");
+        });
+
+        document.getElementById("btnRestoreTaohuayuan").addEventListener("click", function () {
+          state.tempC = 22.5;
+          state.o2Kpa = 21.2;
+          state.o2Sec = 360;
+          for (var i = 0; i < ELEMENT_LIST.length; i++) {
+            ELEMENT_LIST[i].val = Math.max(ELEMENT_LIST[i].val, 0.90);
+          }
+          logIpc("[CRYO-HOMEOSTASIS] 注入桃花源负氧灵气参数 ➔ 十四要素恢复满额稳态");
+          renderElementsPanel();
+          showToast("🌿 十四要素已恢复桃花源黄金稳态！");
+        });
+
+        // Red Anchor 3ms Fuse Buttons
+        document.getElementById("btnHeaderRedAnchor").addEventListener("click", executeRedAnchorRecall);
+        document.getElementById("btnPanelRedAnchor").addEventListener("click", executeRedAnchorRecall);
+
+        // Gameplay Boundary Test Buttons
+        document.getElementById("btnTestMelee").addEventListener("click", function () {
+          state.activeVfx = { kind: "melee", elapsed: 0, duration: 1.1 };
+          logIpc("[WP04-RENDER] 近战挥砍 (0.65m) 严格封闭于 9.6m³ 容器内渲染 (0 宿主实体生成)");
+        });
+        document.getElementById("btnTestProjectile").addEventListener("click", function () {
+          state.activeVfx = { kind: "projectile", elapsed: 0, duration: 1.3 };
+          logIpc("[WP04-HANDOFF] 远程弹道穿出 @ ∂Ω 边界 ➔ 已转换为 " + WORLDS[state.worldKey].coordUnitLabel + " 移交宿主粒子管线！");
+        });
+        document.getElementById("btnTestAoe").addEventListener("click", function () {
+          state.activeVfx = { kind: "aoe", elapsed: 0, duration: 1.5 };
+          logIpc("[WP04-HANDOFF] 5.0m 领域光环触发 EXTERNAL_ANNULAR_GROUND_AOE 环形破界地形贴花！");
+        });
+
+        window.addEventListener("resize", resizeCanvas);
+      }
+
+      window.addEventListener("load", function () {
+        if (window.lucide && typeof window.lucide.createIcons === "function") {
+          window.lucide.createIcons();
+        }
+        resizeCanvas();
+        updateHeaderAndPills();
+        renderUgoPanel();
+        renderGraphPanel();
+        renderElementsPanel();
+        renderDaemonPanel();
+        bindEvents();
+        window.requestAnimationFrame(renderViewportLoop);
+      });
+    })();
+  </script>
+</body>
+</html>

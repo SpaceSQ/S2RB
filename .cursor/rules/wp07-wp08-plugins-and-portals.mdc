@@ -1,0 +1,10 @@
+---
+description: WP-07 Eight Native Host Engine Plugins & WP-08 Dual /s2RB Portals + Taohuayuan Operations Hub Invariants
+globs: ["plugins/**/*", "crates/s2rb-plugin-sdk/**/*", "crates/s2rb-genesis-hub/**/*", "apps/**/*"]
+alwaysApply: true
+---
+# WP-07 & WP-08 Engineering Rules
+
+1. **Bijective Coordinate Conversion**: Every host plugin (`UE5`, `Unity`, `Minecraft Fabric`, `Source 2 / CS2`, `Godot 4`, `WebGPU`, `Taohuayuan World Model`, `Taoyuan Edge IoT`) MUST use `s2rb-plugin-sdk` affine converters rather than ad-hoc axis flips so `@ dOmega` projectile exit positions and `2.0m x 2.0m x 2.4m` (`9.6 m3`) bounding boxes never drift.
+2. **Competitive Server Fairness Lock**: Whenever `trust_tier == TIER_1_AUTHORITATIVE` on a competitive shooter/MOBA host (e.g., CS2, Honor of Kings), lock `max_ugo_item_tier = "TIER_C_COSMETIC_CHARM"` (`0` stat bonus) and `allow_currency_import = false`.
+3. **Dual `/s2RB` Portals & `#001` Genesis Hub**: Keep `www.robot0.com/s2RB` (Open Engine & Plugin Hub) and `www.taohuayuan.world/s2RB` (Taoyuan Custom Travel & AI World-Crossing Portal) synchronized with `META-CN-001-TAOHUAYUAN2-001-2` (`TC-001-ARCH`) and preserve the `< 3.0 ms` Silicon Law 1 preemptive Red Anchor recall interrupt.

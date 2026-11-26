@@ -1,0 +1,6 @@
+"MetamodPlugin"
+{
+    "alias"     "s2rb_cs2"
+    "file"      "addons/s2rb_cs2/bin/s2rb_cs2_bridge"
+    "homepage"  "https://s2rb.space2.world/"
+}

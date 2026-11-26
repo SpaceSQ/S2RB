@@ -1,0 +1,7 @@
+{
+  "name": "@space2/webgpu-s2rb-plugin",
+  "version": "3.0.0",
+  "type": "module",
+  "main": "./src/webgpu_s2rb_adapter.ts",
+  "homepage": "https://s2rb.space2.world/"
+}

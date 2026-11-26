@@ -1,0 +1,15 @@
+[package]
+name = "s2rb-ugo-inventory"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WP-05: 4D Relational & Lineage Graph, One-Click Follow-Jump Resolver, UGO v2.0 Item Ontology & Two-Tier Ark Stash"
+
+[lib]
+name = "s2rb_ugo_inventory"
+crate-type = ["rlib"]
+
+[dependencies]
+s2rb-protocol = { path = "../s2rb-protocol" }
+s2rb-container = { path = "../s2rb-container" }
+s2rb-bridge-core = { path = "../s2rb-bridge-core" }

@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S2RB v3.0 彩虹桥超级游戏连接器 · 双官网 /s2RB 总门户与桃花源古镇 4K 联运指挥大屏</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #040711;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .rainbow-bar {
+      background: linear-gradient(90deg, #22d3ee, #38bdf8, #818cf8, #c084fc, #f472b6, #fbbf24, #34d399);
+    }
+    .glass-card {
+      background: rgba(10, 16, 31, 0.84);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.24);
+    }
+    .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.55); }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.35); border-radius: 9999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500/30">
+  <div class="h-1 w-full rainbow-bar"></div>
+
+  <!-- In-Page Security / Action Toast -->
+  <div id="portalToast" class="fixed bottom-4 right-4 z-50 max-w-sm hidden rounded-xl border border-cyan-400/50 bg-slate-950/95 px-4 py-3 shadow-2xl text-xs text-slate-100">
+    <div class="flex items-start gap-2.5">
+      <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400 shrink-0 mt-0.5"></i>
+      <div id="portalToastMsg" class="leading-relaxed"></div>
+    </div>
+  </div>
+
+  <!-- Top Sovereign Portal Switcher Bar -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/90 bg-slate-950/95 backdrop-blur px-3 sm:px-5 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/30 to-violet-500/30 border border-cyan-400/50 flex items-center justify-center font-black text-xs text-cyan-300 mono shrink-0">
+          S2RB
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs sm:text-sm font-bold text-white truncate">彩虹桥 S2RB v3.0 · 虚实共生超级游戏连接器</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 mono">WP-01~08 收官合龙</span>
+          </div>
+          <p class="text-[11px] text-slate-400 truncate">
+            底座 <span class="text-cyan-300 mono">Space² AIOS (9.6m³)</span> · 零点星门 <span class="text-amber-300 mono">META-CN-001-TAOHUAYUAN2-001-2 (TC-001-ARCH)</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- 3-Surface Mode Tabs -->
+      <div class="flex flex-wrap items-center gap-1.5">
+        <button id="tabBtnRobot0" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border bg-cyan-500/20 border-cyan-400 text-cyan-200 flex items-center gap-1.5">
+          <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+          <span>robot0.com/s2RB 引擎官网</span>
+        </button>
+        <button id="tabBtnTaohuayuan" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border bg-slate-900 border-slate-700 text-slate-300 hover:border-amber-400/60 flex items-center gap-1.5">
+          <i data-lucide="compass" class="w-3.5 h-3.5"></i>
+          <span>taohuayuan.world/s2RB 古镇入口</span>
+        </button>
+        <button id="tabBtnOpsDeck" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border bg-slate-900 border-slate-700 text-slate-300 hover:border-fuchsia-400/60 flex items-center gap-1.5">
+          <i data-lucide="radio" class="w-3.5 h-3.5"></i>
+          <span>古镇运营中心 4K 联运大屏</span>
+        </button>
+        <button id="btnToggleAudio" type="button" class="px-2.5 py-1.5 rounded-lg text-xs border border-slate-700 bg-slate-900 text-slate-300 hover:border-cyan-400/50 flex items-center gap-1" title="切换星门合成音效">
+          <i data-lucide="volume-2" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span id="audioLabel" class="hidden sm:inline">音效开启</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 py-4 space-y-5">
+    <!-- =========================================================
+         SURFACE 1: www.robot0.com/s2RB (Open Engine & WP-07 Plugins)
+         ========================================================= -->
+    <section id="surfaceRobot0" class="space-y-5">
+      <!-- Banner + KPI Strip -->
+      <div class="glass-card rounded-2xl p-4 sm:p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+          <div class="lg:col-span-7 space-y-3">
+            <div class="inline-flex items-center gap-2 text-[11px] px-2.5 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 mono">
+              <span>https://www.robot0.com/s2RB</span>
+              <span>·</span>
+              <span>Apache-2.0 / MIT Open Connector</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-white leading-tight">
+              带着你的英雄、装备与 9.6m³ 智慧生命空间，自由穿越万千游戏宇宙
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              内置 <span class="text-cyan-300 font-semibold">2.0m × 2.0m × 2.4m (9.6m³)</span> 十四要素数字生命空间渲染舱，支持<strong class="text-white">单体 2PC 原子重生</strong>与<strong class="text-white">角色复制 CRDT 归元</strong>双路由，本体持续效果严守 9.6m³ 边界，远程/大范围功法在 <span class="mono text-amber-300">@ ∂Ω</span> 自动移交宿主引擎接力呈现，跨界带入货币硬锁为 <span class="mono text-emerald-300">0.00</span>。
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+              <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-2.5">
+                <div class="text-[10px] text-slate-400">标准角色容器体积</div>
+                <div class="text-sm font-bold text-cyan-300 mono">9.6 m³ (14要素)</div>
+              </div>
+              <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-2.5">
+                <div class="text-[10px] text-slate-400">原生适配游戏/边缘引擎</div>
+                <div class="text-sm font-bold text-violet-300 mono">8 大主流生态</div>
+              </div>
+              <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-2.5">
+                <div class="text-[10px] text-slate-400">正常游玩外壳开销</div>
+                <div class="text-sm font-bold text-emerald-300 mono">0 DrawCalls</div>
+              </div>
+              <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-2.5">
+                <div class="text-[10px] text-slate-400">硅基第一定律红锚熔断</div>
+                <div class="text-sm font-bold text-rose-300 mono">&lt; 3.0 ms 召回</div>
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="rounded-xl overflow-hidden border border-cyan-500/30 bg-slate-950 relative">
+              <img src="user_uploaded_files/ttl=63d/tool_generated/opt_dlsr_cutaway.jpg" alt="2m×2m×2.4m 数字生命空间渲染舱剖面" class="w-full h-auto object-cover" />
+              <div class="absolute bottom-2 left-2 right-2 bg-slate-950/85 backdrop-blur rounded-lg px-3 py-1.5 border border-slate-700/80 flex items-center justify-between text-[11px]">
+                <span class="text-cyan-300 font-semibold">2m×2m×2.4m 空间渲染保护罩</span>
+                <span class="mono text-slate-400">Alt+R 呼出 / 游玩隐形</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Three Flagship Cross-World Gameplay Demos -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="play" class="w-4 h-4 text-cyan-400"></i>
+              <span>三大跨界实机穿越演示舱（无缝内嵌官网效果展播）</span>
+            </h3>
+            <p class="text-xs text-slate-400">点击切换三大标志性穿越剧目，实时检视 9.6m³ 容器提取、UGO 物品规则映射与 @ ∂Ω 破界战斗接力</p>
+          </div>
+          <div class="flex flex-wrap gap-1.5" id="demoSelectorBar"></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+          <div class="lg:col-span-5 rounded-xl overflow-hidden border border-slate-800 bg-slate-950 flex flex-col">
+            <div class="px-3 py-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs">
+              <span class="text-slate-300 font-semibold" id="demoOriginLabel">母世界提取态</span>
+              <span class="mono text-[11px] text-cyan-300" id="demoDidBadge"></span>
+            </div>
+            <img id="demoImgOrigin" src="user_uploaded_files/ttl=63d/tool_generated/d1_s1.jpg" alt="源世界提取画面" class="w-full h-auto object-cover flex-1" />
+          </div>
+
+          <div class="lg:col-span-7 rounded-xl overflow-hidden border border-cyan-500/40 bg-slate-950 flex flex-col">
+            <div class="px-3 py-2 bg-slate-900/90 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="text-amber-300 font-semibold" id="demoTargetLabel">目标宿主世界实机融合态</span>
+              <span class="mono text-[11px] text-emerald-300" id="demoTargetSunsBadge"></span>
+            </div>
+            <img id="demoImgTarget" src="user_uploaded_files/ttl=63d/tool_generated/d1_s3.jpg" alt="目标世界穿越激战画面" class="w-full h-auto object-cover" />
+            <div class="p-3.5 bg-slate-950/95 border-t border-slate-800 space-y-2">
+              <div class="text-xs sm:text-sm font-bold text-white" id="demoHeadline"></div>
+              <p class="text-xs text-slate-300 leading-relaxed" id="demoMechanicsDesc"></p>
+              <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <div id="demoRulePills" class="flex flex-wrap gap-1.5"></div>
+                <button id="btnLaunchDemoToOps" type="button" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/60 text-cyan-200 text-xs font-semibold transition flex items-center gap-1.5">
+                  <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                  <span>将该剧目推送至 4K 运营大屏实测穿梭</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WP-07 Eight Native Engine Plugin Configurator & Coordinate Transformer -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-violet-400"></i>
+              <span>WP-07 八大游戏与物理边缘引擎原生插件工作台（开发商/运营商接入器）</span>
+            </h3>
+            <p class="text-xs text-slate-400">选择宿主引擎，设定七维准入治理规则，实时验证 S2 标准米制与宿主引擎坐标系双向无损转换并生成 <span class="mono text-cyan-300">s2rb-host.toml</span></p>
+          </div>
+          <button id="btnTamperCurrency" type="button" class="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-400/50 text-rose-300 text-xs font-semibold transition flex items-center gap-1.5">
+            <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+            <span>模拟开启跨界带币 (验证 403 硬件级拦截)</span>
+          </button>
+        </div>
+
+        <!-- 8 Engine Pills -->
+        <div id="engineGridButtons" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- Left: 7-Dim Host Rules + Coordinate Tester -->
+          <div class="lg:col-span-6 rounded-xl bg-slate-900/80 border border-slate-800 p-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <div>
+                <div class="text-xs font-bold text-white" id="selectedEngineTitle"></div>
+                <div class="text-[11px] text-slate-400 mono" id="selectedEngineMeta"></div>
+              </div>
+              <span id="selectedEngineTierBadge" class="text-[10px] px-2 py-0.5 rounded bg-violet-500/20 border border-violet-400/40 text-violet-200 mono"></span>
+            </div>
+
+            <!-- 7-Dimension Toggles -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <label class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-slate-800 cursor-pointer">
+                <span>1. 允许原角色皮肤/全息外观</span>
+                <input id="chkAllowSkin" type="checkbox" class="accent-cyan-400 w-4 h-4" checked />
+              </label>
+              <label class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-slate-800 cursor-pointer">
+                <span>2. 允许原世界武器数值生效</span>
+                <input id="chkAllowWeapons" type="checkbox" class="accent-cyan-400 w-4 h-4" />
+              </label>
+              <label class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-slate-800 cursor-pointer">
+                <span>3. 允许 @ ∂Ω 远程破界技能接力</span>
+                <input id="chkAllowHandoff" type="checkbox" class="accent-cyan-400 w-4 h-4" checked />
+              </label>
+              <label class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-slate-800 cursor-pointer">
+                <span>4. 允许原世界经验曲线折算</span>
+                <input id="chkAllowXp" type="checkbox" class="accent-cyan-400 w-4 h-4" />
+              </label>
+              <label class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-slate-800 cursor-pointer">
+                <span>5. 启用 9.6m³ 十四要素护罩</span>
+                <input id="chkEnableShield" type="checkbox" class="accent-cyan-400 w-4 h-4" checked />
+              </label>
+              <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/80 border border-emerald-500/40">
+                <span class="text-emerald-300">7. 跨界货币带入 (宪法锁死)</span>
+                <span class="mono text-[11px] font-bold text-emerald-400">LOCKED: false</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="text-slate-300">6. UGO v2.0 背包物品最高准入层级：</span>
+              <select id="selUgoTier" class="rounded-lg bg-slate-950 border border-slate-700 px-2.5 py-1.5 text-xs text-cyan-200 mono">
+                <option value="TIER_A_NATIVE_MECHANIC">TIER_A_NATIVE_MECHANIC (原生实体机制)</option>
+                <option value="TIER_B_PASSIVE_AFFIX">TIER_B_PASSIVE_AFFIX (属性词条折算)</option>
+                <option value="TIER_C_COSMETIC_CHARM">TIER_C_COSMETIC_CHARM (竞技服0数值挂件)</option>
+              </select>
+            </div>
+
+            <!-- Live Affine Coordinate Converter -->
+            <div class="rounded-xl bg-slate-950 border border-slate-800 p-3 space-y-2">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-semibold text-cyan-300">S2 9.6m³ 标准坐标 (+X右, +Y前, +Z上 [0..2.4m]) ➔ 宿主引擎坐标</span>
+                <span id="coordUnitBadge" class="mono text-slate-400"></span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-xs">
+                <div>
+                  <label class="text-[10px] text-slate-400 block">S2 X (m) [-1..1]</label>
+                  <input id="inpS2X" type="number" step="0.05" min="-1" max="1" value="0.65" class="w-full rounded bg-slate-900 border border-slate-700 px-2 py-1 mono text-white" />
+                </div>
+                <div>
+                  <label class="text-[10px] text-slate-400 block">S2 Y (m) [-1..1]</label>
+                  <input id="inpS2Y" type="number" step="0.05" min="-1" max="1" value="-0.80" class="w-full rounded bg-slate-900 border border-slate-700 px-2 py-1 mono text-white" />
+                </div>
+                <div>
+                  <label class="text-[10px] text-slate-400 block">S2 Z (m) [0..2.4]</label>
+                  <input id="inpS2Z" type="number" step="0.05" min="0" max="2.4" value="1.75" class="w-full rounded bg-slate-900 border border-slate-700 px-2 py-1 mono text-white" />
+                </div>
+              </div>
+              <div class="text-xs mono bg-slate-900/90 rounded-lg px-2.5 py-2 border border-cyan-500/20 text-amber-300" id="coordConvertedReadout"></div>
+            </div>
+          </div>
+
+          <!-- Right: Generated s2rb-host.toml & Native Bootstrap Snippet -->
+          <div class="lg:col-span-6 rounded-xl bg-slate-950 border border-slate-800 p-4 flex flex-col justify-between space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-300 mono" id="codeHeaderPath">plugins/unreal-s2rb/Config/s2rb-host.toml</span>
+              <button id="btnCopyConfig" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 flex items-center gap-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>复制配置与接入代码</span>
+              </button>
+            </div>
+            <pre id="generatedCodePre" class="text-[11px] leading-relaxed mono text-slate-300 bg-slate-900/90 rounded-xl p-3 border border-slate-800 overflow-x-auto custom-scroll max-h-80"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SURFACE 2: www.taohuayuan.world/s2RB (Taoyuan Cultural & Travel Portal)
+         ========================================================= -->
+    <section id="surfaceTaohuayuan" class="hidden space-y-5">
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12">
+          <div class="lg:col-span-7 relative">
+            <img src="user_uploaded_files/ttl=63d/tool_generated/opt_plaza_genesis_arch.jpg" alt="桃花源古镇中心广场彩虹桥 #001 创世星门" class="w-full h-full object-cover min-h-[260px]" />
+            <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-950/85 border border-amber-400/50 text-[11px] text-amber-300 mono">
+              https://www.taohuayuan.world/s2RB · 穿越桃花源同步频道
+            </div>
+          </div>
+          <div class="lg:col-span-5 p-5 sm:p-6 flex flex-col justify-center space-y-3.5 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+            <div class="text-xs font-bold tracking-wider text-amber-400 uppercase">湖南常德桃源县 · 标杆性虚实共生工程</div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-white leading-snug">
+              定制旅行线路之都 · AI穿越世界入口
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <strong class="text-white">桃花源古镇中心广场</strong>既是现实世界的文旅核心地标（实体牌坊锚点 <span class="mono text-amber-300">TC-001-ARCH</span>），也是彩虹桥 S2RB 软件宇宙中的 <strong class="text-cyan-300">#001 零点总母港</strong>（标准六段式地址 <span class="mono text-cyan-300">META-CN-001-TAOHUAYUAN2-001-2</span>）。游客与全球玩家在此完成碳硅身份互认、实体 NFC 定气玉佩授印，并在驻留期间尊享 <span class="mono text-emerald-300">1.5x</span> 角色容器静息生命恢复加成。
+            </p>
+            <div class="grid grid-cols-2 gap-2.5 text-xs pt-1">
+              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                <div class="text-[10px] text-slate-400">现实物理入口锚点</div>
+                <div class="font-bold text-amber-300 mono">TC-001-ARCH 古镇牌坊</div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                <div class="text-[10px] text-slate-400">虚拟世界零点总址</div>
+                <div class="font-bold text-cyan-300 mono truncate">META-CN-001-TAOHUAYUAN2-001-2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Travel Route Planner & Cryptographic Pass Minter -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="lg:col-span-7 glass-card rounded-2xl p-4 sm:p-5 space-y-4">
+          <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="ticket" class="w-4 h-4 text-amber-400"></i>
+            <span>桃源县“碳硅伴游”定制旅行线路规划与虚实通行证签发台</span>
+          </h3>
+
+          <div id="routeCardsContainer" class="space-y-2.5"></div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+            <div>
+              <label class="block text-slate-400 mb-1">出行碳基主权容器 (Class-D S2-DID)</label>
+              <select id="selTravelerDid" class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-white mono text-xs">
+                <option value="DMILES26112688888888IC">DMILES26112688888888IC (全息统帅·零号)</option>
+                <option value="DUTHER26112600029910GW">DUTHER26112600029910GW (圣骑士·Uther)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">随行硅基伴游灵体 (Class-V 零货币权限)</label>
+              <select id="selCompanionDid" class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-cyan-300 mono text-xs">
+                <option value="VTAOHU26112600000108KY">VTAOHU26112600000108KY (桃源诗词导览官)</option>
+                <option value="VSONAR26112612345678CX">VSONAR26112612345678CX (声纹战术副官)</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="btnIssueTravelPass" type="button" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-cyan-500 hover:opacity-95 text-slate-950 font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>立即签发 S2-SUNS 虚实联游通行证（同步点亮古镇 4K 运营大屏）</span>
+          </button>
+        </div>
+
+        <!-- Issued Pass Preview Card -->
+        <div class="lg:col-span-5 glass-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div>
+              <div class="text-[10px] text-amber-400 font-bold tracking-wider uppercase">S2RB VIRTUAL-REAL PASS</div>
+              <div class="text-sm font-bold text-white" id="passTitleReadout">等待签发或查看默认示范通行证</div>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[10px] mono">1.5x 静息加成</span>
+          </div>
+
+          <div id="passDetailBody" class="space-y-2.5 text-xs mono bg-slate-950/90 rounded-xl p-3.5 border border-amber-400/30"></div>
+
+          <div class="text-[11px] text-slate-400 leading-relaxed">
+            运营支撑：桃花源古镇彩虹桥运营中心 · 广州零号软件科技有限公司协同技术底座（粤ICP备19108396号-1）。所有线下文创 NFC 授印均锚定于 <span class="mono text-slate-200">Chronicle</span> 追加式历史账本。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SURFACE 3: Taohuayuan Operations Center 4K Command Deck
+         ========================================================= -->
+    <section id="surfaceOpsDeck" class="hidden space-y-4">
+      <!-- Top Command KPIs + Global Red Anchor Fuse Button -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+        <div class="glass-card rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">在线引擎生态节点</div>
+          <div class="text-lg font-black text-cyan-300 mono" id="kpiEnginesOnline">8 / 8</div>
+        </div>
+        <div class="glass-card rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">单调递增防脑裂锁</div>
+          <div class="text-lg font-black text-amber-300 mono" id="kpiFencingToken">#14</div>
+        </div>
+        <div class="glass-card rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">活跃复制分身 (CRDT)</div>
+          <div class="text-lg font-black text-violet-300 mono" id="kpiActiveClones">3</div>
+        </div>
+        <div class="glass-card rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">桃源联游通行证签发</div>
+          <div class="text-lg font-black text-emerald-300 mono" id="kpiTravelPasses">1</div>
+        </div>
+        <div class="glass-card rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">跨界带币 403 拦截</div>
+          <div class="text-lg font-black text-rose-300 mono" id="kpiBlockedCurrency">0 次 (0.00)</div>
+        </div>
+        <button id="btnGlobalRedAnchor" type="button" class="rounded-xl p-3 bg-gradient-to-br from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 border border-rose-300/60 text-left transition shadow-lg shadow-rose-950/60">
+          <div class="flex items-center justify-between text-[10px] text-rose-100 font-bold">
+            <span>硅基定律1 物理红锚</span>
+            <i data-lucide="octagon-alert" class="w-3.5 h-3.5"></i>
+          </div>
+          <div class="text-sm font-black text-white mt-0.5" id="redAnchorBtnReadout">一键 &lt;3ms 全局召回</div>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Center Star-Gate Radar Canvas + Live Bridge Dispatcher -->
+        <div class="lg:col-span-8 glass-card rounded-2xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-white">桃花源古镇运营中心 · 万界星门实时联运拓扑星图</h3>
+              <p class="text-[11px] text-slate-400">中心零点：<span class="mono text-amber-300">META-CN-001-TAOHUAYUAN2-001-2</span> · 实时呈现八大引擎单体 2PC 迁徙与角色复制 CRDT 合流脉冲</p>
+            </div>
+            <span id="opsSafetyBadge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 mono">
+              LAW-2 棱镜粗糙度 6.5% (&ge;5.0%)
+            </span>
+          </div>
+
+          <div class="relative w-full h-80 sm:h-96 rounded-xl overflow-hidden bg-slate-950 border border-slate-800">
+            <canvas id="opsTopologyCanvas" class="w-full h-full block"></canvas>
+          </div>
+
+          <!-- Live Cross-World Dispatch Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-1 items-end text-xs">
+            <div class="sm:col-span-4">
+              <label class="text-[10px] text-slate-400 block mb-1">源引擎世界</label>
+              <select id="selDispatchFrom" class="w-full rounded-lg bg-slate-950 border border-slate-700 px-2.5 py-1.5 text-white text-xs"></select>
+            </div>
+            <div class="sm:col-span-4">
+              <label class="text-[10px] text-slate-400 block mb-1">目标宿主引擎世界</label>
+              <select id="selDispatchTo" class="w-full rounded-lg bg-slate-950 border border-slate-700 px-2.5 py-1.5 text-cyan-200 text-xs"></select>
+            </div>
+            <div class="sm:col-span-4 flex gap-1.5">
+              <button id="btnDispatchSingleton" type="button" class="flex-1 py-1.5 px-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/60 text-cyan-200 font-semibold">
+                单体 2PC 穿梭
+              </button>
+              <button id="btnDispatchClone" type="button" class="flex-1 py-1.5 px-2 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 border border-violet-400/60 text-violet-200 font-semibold">
+                复制分身合流
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: 14 Elements Matrix + Chronicle Merkle Audit Stream -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+          <div class="glass-card rounded-2xl p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-white">9.6m³ 空间十四要素实时耦合场</h4>
+              <span class="text-[10px] mono text-cyan-300">6显性 + 8隐性</span>
+            </div>
+            <div id="opsElementsMiniGrid" class="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto custom-scroll pr-1"></div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-4 flex-1 flex flex-col space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-white">Chronicle 跨界联运哈希审计流</h4>
+              <span class="text-[10px] mono text-emerald-300" id="merkleHeadBadge">HEAD: 8f3a..c91e</span>
+            </div>
+            <div id="opsChronicleFeed" class="space-y-1.5 text-[11px] mono max-h-52 overflow-y-auto custom-scroll pr-1"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const GENESIS_HUB_SUNS = "META-CN-001-TAOHUAYUAN2-001-2";
+      const GENESIS_LANDMARK = "TC-001-ARCH";
+
+      const DEMOS = [
+        {
+          id: "demo1",
+          shortTitle: "DEMO 1 · Minecraft ➔ 古罗马帝国",
+          did: "DMILES26112688888888IC",
+          originLabel: "源世界：Minecraft 模组创造母界 (GAME-NE-004-MINECRAFT2-001-2)",
+          targetLabel: "宿主引擎：古罗马帝国 · UE5 单机/联机插件",
+          targetSuns: "FILM-WA-009-ROMANEMP2-108-2",
+          originImg: "user_uploaded_files/ttl=63d/tool_generated/d1_s1.jpg",
+          targetImg: "user_uploaded_files/ttl=63d/tool_generated/d1_s3.jpg",
+          fromEngine: "minecraft-fabric-s2rb",
+          toEngine: "unreal-s2rb",
+          headline: "像素钻石甲与鞘翅先锋降临古罗马角斗场，黑曜石触发 Tier-A 1m³ 实体防爆掩体",
+          desc: "角色容器保留像素PBR混合材质、下界合金镐与鞘翅滑翔背包；近身挥镐严格封闭于 9.6m³ 容器内渲染，震地冲击波穿过 @ ∂Ω 边界移交 UE5 Niagara 粒子系统激起角斗场碎石。",
+          pills: ["单体 2PC 原子重生", "UGO Tier-A 原生方块掩体", "@ ∂Ω Niagara 破界接力", "带入金币: 0.00"]
+        },
+        {
+          id: "demo2",
+          shortTitle: "DEMO 2 · 魔兽圣骑士 ➔ 王者荣耀",
+          did: "DUTHER26112600029910GW",
+          originLabel: "源世界：艾泽拉斯写实圣光殿堂 (写实高模圣骑士)",
+          targetLabel: "宿主引擎：王者荣耀 · Unity 6 竞技峡谷",
+          targetSuns: "GAME-CN-002-HONORKING2-005-2",
+          originImg: "user_uploaded_files/ttl=63d/tool_generated/d2_s1.jpg",
+          targetImg: "user_uploaded_files/ttl=63d/tool_generated/d2_s3.jpg",
+          fromEngine: "webgpu-s2rb",
+          toEngine: "unity-s2rb",
+          headline: "写实高模大领主圣骑士携灰烬使者空降王者峡谷，神圣风暴触发 5.0m 环形破界地形贴花",
+          desc: "严格使用真实比例写实板甲英雄模型；竞技服宿主机自动启用 ±5% 战力平衡锁与 Tier-C 纯外观圣光战翼映射，既展现降维视觉震撼又严守 MOBA 竞技公平。",
+          pills: ["角色复制 CRDT 分身", "竞技服 ±5% 战力钳制", "5.0m 环形破界贴花", "带入金币: 0.00"]
+        },
+        {
+          id: "demo3",
+          shortTitle: "DEMO 3 · 全息数字人 ➔ CS反恐精英",
+          did: "DMILES26112688888888IC",
+          originLabel: "源世界：桃花源全息数字人舱 (真人级体积光全息影像)",
+          targetLabel: "宿主引擎：Counter-Strike 2 · Source 2 特警联合作战",
+          targetSuns: "GAME-NA-003-CS2TACTIC2-012-4",
+          originImg: "user_uploaded_files/ttl=63d/tool_generated/d3_s1.jpg",
+          targetImg: "user_uploaded_files/ttl=63d/tool_generated/d3_s3.jpg",
+          fromEngine: "taohuayuan-world-s2rb",
+          toEngine: "source2-cs2-s2rb",
+          headline: "真人级体积全息数字人并肩 SWAT 特警突入仓库，原界神装自动降级为 0 数值战术枪饰",
+          desc: "采用高保真全息人体光学着色而非木偶小人；Source 2 竞技插件强制锁定 Tier-C 零数值步枪挂件且不动摇 CS2 局内 $800/$16000 经济体系，联机合作模式下开放 E03 声纹方位提示。",
+          pills: ["全息真人数字分身", "UGO Tier-C 零数值枪饰", "CS2 独立经济零干扰", "带入货币: 0.00"]
+        }
+      ];
+
+      const ENGINES = [
+        {
+          id: "unreal-s2rb",
+          short: "UE5",
+          name: "Unreal Engine 5 (RDG + Niagara)",
+          suns: "FILM-WA-009-ROMANEMP2-108-2",
+          tier: "TIER_3_SANDBOX",
+          conv: "UNREAL_LEFT_Z_UP_CM",
+          unit: "cm (左手系 +X前 +Y右 +Z上)",
+          shader: "HLSL_SM6",
+          path: "plugins/unreal-s2rb/Config/s2rb-host.toml",
+          skin: true, weapons: true, handoff: true, xp: true, shield: true,
+          ugo: "TIER_A_NATIVE_MECHANIC",
+          residents: 4,
+          snippet: "// UE5 C++ Subsystem Bootstrap\nUS2RBSubsystem* Bridge = GetGameInstance()->GetSubsystem<US2RBSubsystem>();\nFVector ExitCm = US2RBSubsystem::S2MetersToUnrealCm(FVector(0.65f, -0.80f, 1.75f));"
+        },
+        {
+          id: "unity-s2rb",
+          short: "Unity 6",
+          name: "Unity 6 (URP / HDRP RendererFeature)",
+          suns: "GAME-CN-002-HONORKING2-005-2",
+          tier: "TIER_1_COMPETITIVE",
+          conv: "UNITY_LEFT_Y_UP_M",
+          unit: "m (左手系 +X右 +Y上 +Z前)",
+          shader: "HLSL_URP_HDRP",
+          path: "plugins/unity-s2rb/Config/s2rb-host.toml",
+          skin: true, weapons: false, handoff: true, xp: false, shield: false,
+          ugo: "TIER_C_COSMETIC_CHARM",
+          residents: 6,
+          snippet: "// Unity 6 C# Component\nVector3 unityPos = S2RBBridgeBehaviour.S2MetersToUnity(new Vector3(0.65f, -0.80f, 1.75f));"
+        },
+        {
+          id: "minecraft-fabric-s2rb",
+          short: "MC Fabric",
+          name: "Minecraft Java (Fabric 1.21+)",
+          suns: "GAME-NE-004-MINECRAFT2-001-2",
+          tier: "TIER_3_SANDBOX",
+          conv: "GLTF_RIGHT_Y_UP_M",
+          unit: "Block=1m (右手系 +Y上)",
+          shader: "GLSL_450",
+          path: "plugins/minecraft-fabric-s2rb/config/s2rb-host.toml",
+          skin: true, weapons: true, handoff: true, xp: true, shield: true,
+          ugo: "TIER_A_NATIVE_MECHANIC",
+          residents: 5,
+          snippet: "// Fabric Java Entrypoint\ndouble[] mcBlockPos = S2RBFabricMod.s2MetersToMinecraftBlocks(0.65, -0.80, 1.75);"
+        },
+        {
+          id: "source2-cs2-s2rb",
+          short: "Source2 / CS2",
+          name: "Source 2 / CS2 Tactical Bridge",
+          suns: "GAME-NA-003-CS2TACTIC2-012-4",
+          tier: "TIER_1_COMPETITIVE",
+          conv: "SOURCE2_RIGHT_Z_UP_INCH",
+          unit: "inch (右手系 Hammer 英寸)",
+          shader: "HLSL_SM6",
+          path: "plugins/source2-cs2-s2rb/cfg/s2rb-host.toml",
+          skin: true, weapons: false, handoff: false, xp: false, shield: false,
+          ugo: "TIER_C_COSMETIC_CHARM",
+          residents: 3,
+          snippet: "// Source 2 C++ Tactical Hook (Zero-Stat Gun Charm Locked)\nInitCs2S2rbTacticalBridge(); // allow_currency_import = false"
+        },
+        {
+          id: "godot4-s2rb",
+          short: "Godot 4",
+          name: "Godot 4 (GDExtension Node3D)",
+          suns: "GAME-SA-006-OPENINDIE2-003-2",
+          tier: "TIER_3_SANDBOX",
+          conv: "GLTF_RIGHT_Y_UP_M",
+          unit: "m (右手系 +Y上)",
+          shader: "GLSL_450",
+          path: "plugins/godot4-s2rb/addons/s2rb/s2rb-host.toml",
+          skin: true, weapons: true, handoff: true, xp: true, shield: true,
+          ugo: "TIER_B_PASSIVE_AFFIX",
+          residents: 2,
+          snippet: "# Godot 4 GDScript\nvar godot_pt := S2RBContainerNode3D.s2_meters_to_godot(Vector3(0.65, -0.80, 1.75))"
+        },
+        {
+          id: "webgpu-s2rb",
+          short: "WebGPU",
+          name: "WebGPU / Three.js 元宇宙试炼场",
+          suns: "META-EA-007-WEBGPUVERSE2-001-2",
+          tier: "TIER_1_PARTNER",
+          conv: "GLTF_RIGHT_Y_UP_M",
+          unit: "m (glTF/VRM 右手系 +Y上)",
+          shader: "WGSL_1_0",
+          path: "plugins/webgpu-s2rb/s2rb-host.toml",
+          skin: true, weapons: true, handoff: true, xp: true, shield: true,
+          ugo: "TIER_A_NATIVE_MECHANIC",
+          residents: 4,
+          snippet: "// WebGPU WGSL 9.6m3 Uniforms\nconst uniforms = createWebGpuClipUniforms(0.0, 6.5);"
+        },
+        {
+          id: "taohuayuan-world-s2rb",
+          short: "桃花源世界",
+          name: "桃花源世界模型 (#001 创世总母港)",
+          suns: GENESIS_HUB_SUNS,
+          tier: "TIER_1_GENESIS",
+          conv: "S2_CANONICAL_Z_UP_M",
+          unit: "m (S2 标准右手系 +Z上)",
+          shader: "WGSL_1_0",
+          path: "plugins/taohuayuan-world-s2rb/s2rb-host.toml",
+          skin: true, weapons: true, handoff: true, xp: true, shield: true,
+          ugo: "TIER_A_NATIVE_MECHANIC",
+          residents: 9,
+          snippet: "// Taohuayuan World Model Hub (#001 Sanctuary 1.5x Recovery)\nconnectGenesisMotherHarbor('META-CN-001-TAOHUAYUAN2-001-2');"
+        },
+        {
+          id: "taoyuan-edge-iot-s2rb",
+          short: "古镇边缘网关",
+          name: "桃花源古镇实景网关 (TC-001-ARCH)",
+          suns: "PHYS-CN-001-TAOYUANARCH7-001-2",
+          tier: "TIER_1_PHYSICAL_EDGE",
+          conv: "S2_CANONICAL_Z_UP_M",
+          unit: "m (古镇广场 2×2×2.4m 实景舱)",
+          shader: "OPENXR_HOLOLENS_SDF",
+          path: "plugins/taoyuan-edge-iot-s2rb/s2rb-host.toml",
+          skin: true, weapons: false, handoff: false, xp: true, shield: true,
+          ugo: "TIER_C_COSMETIC_CHARM",
+          residents: 3,
+          snippet: "// Rust Physical Edge PLC (<3.0ms 5N Hardware Red Anchor Interrupt)\narm_tc001_arch_hardware_fuse(5.0, 3.0);"
+        }
+      ];
+
+      const ROUTES = [
+        {
+          code: "TY-ROUTE-01-STAR_PLAZA",
+          title: "桃花源古镇中心广场 #001 创世星门打卡线",
+          suns: GENESIS_HUB_SUNS,
+          desc: "古镇中心广场 2m×2m×2.4m 全息星门实景合拍 · TC-001-ARCH 实体牌坊 NFC 定气玉佩授印 · 1.5x 静息生命恢复"
+        },
+        {
+          code: "TY-ROUTE-02-QINXI_BOAT",
+          title: "秦溪夜泊 · 碳硅双生伴游定制线",
+          suns: "PHYS-CN-001-TAOYUANARCH7-002-3",
+          desc: "Class-V 硅基诗词导览官实时伴游 · 秦溪水幕投影联动玩家英雄皮肤 · 零货币铁闸文创纪念章铸造"
+        },
+        {
+          code: "TY-ROUTE-03-YIWANGXI_EXPEDITION",
+          title: "桃源夷望溪 · 虚实奇境探险定制线",
+          suns: "PHYS-CN-001-TAOYUANARCH7-003-4",
+          desc: "山水实景触发 9.6m³ 十四要素微氧与声纹共鸣 · 跨世界好友 Follow-Jump 云端同船集结"
+        }
+      ];
+
+      const FOURTEEN_ELEMENTS = [
+        ["E01_LUMINA", "光影视觉场", "94%"],
+        ["E02_ATMOS", "微氧呼吸池", "360s"],
+        ["E03_ACOUSTIC", "声纹雷达场", "ACTIVE"],
+        ["E04_THERMAL", "热力散热场", "36.5°C"],
+        ["E05_MOMENTUM", "动量硬直场", "POISE+"],
+        ["E06_METABOLIC", "代谢能量池", "98%"],
+        ["E07_BIOSENSOR", "核心生命征", "1000HP"],
+        ["E08_WAVE", "频谱通信场", "SYNC"],
+        ["E09_ODOR", "生化瘴气盾", "IMMUNE"],
+        ["E10_VIBRATION", "微震应力盾", "100%"],
+        ["E11_HYDRO", "灵泉补给链", "READY"],
+        ["E12_LOGIC", "编年史记忆", "MERKLE"],
+        ["E13_TRUST", "信誉隔离墙", "CLEAN"],
+        ["E14_SOVEREIGN", "红锚终极权", "<3.0ms"]
+      ];
+
+      const state = {
+        activeSurface: "robot0",
+        audioEnabled: true,
+        audioCtx: null,
+        selectedDemoIdx: 0,
+        selectedEngineIdx: 0,
+        selectedRouteIdx: 0,
+        fencingToken: 14,
+        activeClones: 3,
+        blockedCurrencyCount: 0,
+        fuseFlashTimer: 0,
+        packets: [],
+        issuedPasses: [
+          {
+            passId: "PASS-TY-9A41F082C3E1",
+            routeTitle: "桃花源古镇中心广场 #001 创世星门打卡线",
+            entrySuns: GENESIS_HUB_SUNS,
+            landmark: GENESIS_LANDMARK,
+            travelerDid: "DMILES26112688888888IC",
+            companionDid: "VTAOHU26112600000108KY",
+            nfcSeal: "NFC-TC-001-ARCH-00001",
+            cryoMult: "1.5x",
+            currencyImported: "0.00 (原世界托管冻结)"
+          }
+        ],
+        chronicleLogs: [
+          "[#14] SINGLETON_2PC: DMILES..88IC 迁入 FILM-WA-009-ROMANEMP2-108-2 (0.84ms)",
+          "[#13] CLONE_CRDT_MERGE: DUTHER..10GW 合流 +1,250 XP ➔ 母体账本幂等归元",
+          "[#12] GENESIS_ANCHOR: 桃花源古镇 TC-001-ARCH 星门泊位 [2..9] 自检正常"
+        ]
+      };
+
+      function playTone(kind) {
+        if (!state.audioEnabled) return;
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          if (!state.audioCtx) state.audioCtx = new AudioContextClass();
+          if (state.audioCtx.state === "suspended") state.audioCtx.resume();
+          const now = state.audioCtx.currentTime;
+          const osc = state.audioCtx.createOscillator();
+          const gain = state.audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(state.audioCtx.destination);
+          if (kind === "fuse") {
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(660, now);
+            osc.frequency.exponentialRampToValueAtTime(220, now + 0.22);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          } else {
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(kind === "pass" ? 523.25 : 440, now);
+            osc.frequency.exponentialRampToValueAtTime(kind === "pass" ? 783.99 : 659.25, now + 0.16);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+            osc.start(now);
+            osc.stop(now + 0.19);
+          }
+        } catch (e) {}
+      }
+
+      let toastTimer = null;
+      function showToast(msg) {
+        const box = document.getElementById("portalToast");
+        const txt = document.getElementById("portalToastMsg");
+        txt.textContent = msg;
+        box.classList.remove("hidden");
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          box.classList.add("hidden");
+        }, 3600);
+      }
+
+      function switchSurface(mode) {
+        state.activeSurface = mode;
+        const map = {
+          robot0: ["surfaceRobot0", "tabBtnRobot0"],
+          taohuayuan: ["surfaceTaohuayuan", "tabBtnTaohuayuan"],
+          ops: ["surfaceOpsDeck", "tabBtnOpsDeck"]
+        };
+        Object.keys(map).forEach(function (k) {
+          const sec = document.getElementById(map[k][0]);
+          const btn = document.getElementById(map[k][1]);
+          if (k === mode) {
+            sec.classList.remove("hidden");
+            btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border bg-cyan-500/20 border-cyan-400 text-cyan-200 flex items-center gap-1.5";
+          } else {
+            sec.classList.add("hidden");
+            btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border bg-slate-900 border-slate-700 text-slate-300 hover:border-cyan-400/50 flex items-center gap-1.5";
+          }
+        });
+        if (mode === "ops") {
+          resizeOpsCanvas();
+        }
+      }
+
+      function renderDemoSection() {
+        const bar = document.getElementById("demoSelectorBar");
+        bar.innerHTML = "";
+        DEMOS.forEach(function (d, idx) {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = idx === state.selectedDemoIdx
+            ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500/25 border border-cyan-400 text-cyan-200"
+            : "px-3 py-1.5 rounded-lg text-xs bg-slate-900 border border-slate-700 text-slate-300 hover:border-slate-500";
+          b.textContent = d.shortTitle;
+          b.addEventListener("click", function () {
+            state.selectedDemoIdx = idx;
+            playTone("jump");
+            renderDemoSection();
+          });
+          bar.appendChild(b);
+        });
+
+        const cur = DEMOS[state.selectedDemoIdx];
+        document.getElementById("demoOriginLabel").textContent = cur.originLabel;
+        document.getElementById("demoDidBadge").textContent = cur.did;
+        document.getElementById("demoTargetLabel").textContent = cur.targetLabel;
+        document.getElementById("demoTargetSunsBadge").textContent = cur.targetSuns;
+        document.getElementById("demoImgOrigin").src = cur.originImg;
+        document.getElementById("demoImgTarget").src = cur.targetImg;
+        document.getElementById("demoHeadline").textContent = cur.headline;
+        document.getElementById("demoMechanicsDesc").textContent = cur.desc;
+
+        const pills = document.getElementById("demoRulePills");
+        pills.innerHTML = "";
+        cur.pills.forEach(function (p) {
+          const sp = document.createElement("span");
+          sp.className = "text-[11px] px-2 py-0.5 rounded-md bg-slate-900 border border-slate-700 text-cyan-300 mono";
+          sp.textContent = p;
+          pills.appendChild(sp);
+        });
+      }
+
+      function convertS2Point(pt, conv) {
+        const x = pt[0], y = pt[1], z = pt[2];
+        if (conv === "UNREAL_LEFT_Z_UP_CM") return [y * 100, x * 100, z * 100];
+        if (conv === "UNITY_LEFT_Y_UP_M") return [x, z, y];
+        if (conv === "GLTF_RIGHT_Y_UP_M") return [x, z, -y];
+        if (conv === "SOURCE2_RIGHT_Z_UP_INCH") return [x / 0.0254, y / 0.0254, z / 0.0254];
+        return [x, y, z];
+      }
+
+      function renderEngineWorkbench() {
+        const grid = document.getElementById("engineGridButtons");
+        grid.innerHTML = "";
+        ENGINES.forEach(function (eng, idx) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = idx === state.selectedEngineIdx
+            ? "p-2 rounded-xl border bg-violet-500/25 border-violet-400 text-white text-left transition"
+            : "p-2 rounded-xl border bg-slate-900/90 border-slate-800 text-slate-300 hover:border-slate-600 text-left transition";
+          btn.innerHTML = '<div class="text-xs font-bold truncate">' + eng.short + '</div><div class="text-[10px] text-slate-400 mono truncate">' + eng.shader + '</div>';
+          btn.addEventListener("click", function () {
+            state.selectedEngineIdx = idx;
+            syncInputsFromSelectedEngine();
+            renderEngineWorkbench();
+          });
+          grid.appendChild(btn);
+        });
+
+        const e = ENGINES[state.selectedEngineIdx];
+        document.getElementById("selectedEngineTitle").textContent = e.name;
+        document.getElementById("selectedEngineMeta").textContent = e.suns + " · " + e.shader;
+        document.getElementById("selectedEngineTierBadge").textContent = e.tier;
+        document.getElementById("coordUnitBadge").textContent = e.unit;
+        document.getElementById("codeHeaderPath").textContent = e.path;
+
+        updateCoordinateAndTomlOutput();
+      }
+
+      function syncInputsFromSelectedEngine() {
+        const e = ENGINES[state.selectedEngineIdx];
+        document.getElementById("chkAllowSkin").checked = e.skin;
+        document.getElementById("chkAllowWeapons").checked = e.weapons;
+        document.getElementById("chkAllowHandoff").checked = e.handoff;
+        document.getElementById("chkAllowXp").checked = e.xp;
+        document.getElementById("chkEnableShield").checked = e.shield;
+        document.getElementById("selUgoTier").value = e.ugo;
+      }
+
+      function updateCoordinateAndTomlOutput() {
+        const e = ENGINES[state.selectedEngineIdx];
+        const sx = parseFloat(document.getElementById("inpS2X").value) || 0;
+        const sy = parseFloat(document.getElementById("inpS2Y").value) || 0;
+        const sz = parseFloat(document.getElementById("inpS2Z").value) || 0;
+        const hv = convertS2Point([sx, sy, sz], e.conv);
+        document.getElementById("coordConvertedReadout").textContent =
+          "宿主坐标输出: (" + hv[0].toFixed(2) + ", " + hv[1].toFixed(2) + ", " + hv[2].toFixed(2) + ") — 逆变换误差 < 1e-9";
+
+        const allowSkin = document.getElementById("chkAllowSkin").checked;
+        const allowWeapons = document.getElementById("chkAllowWeapons").checked;
+        const allowHandoff = document.getElementById("chkAllowHandoff").checked;
+        const allowXp = document.getElementById("chkAllowXp").checked;
+        const enableShield = document.getElementById("chkEnableShield").checked;
+        const ugoTier = document.getElementById("selUgoTier").value;
+
+        const toml = [
+          "# Generated by S2RB v3.0 Plugin Workbench (https://www.robot0.com/s2RB)",
+          "[host_world]",
+          'engine_id = "' + e.id + '"',
+          'world_suns = "' + e.suns + '"',
+          'coord_convention = "' + e.conv + '"',
+          'shader_backend = "' + e.shader + '"',
+          "",
+          "[container_geometry]",
+          "dimensions_m = [2.0, 2.0, 2.4] # 9.6 m3 Strict SDF Clip",
+          "prism_rim_roughness_pct = 6.5  # Law 2 (>= 5.0%)",
+          "red_anchor_sla_ms = 3.0        # Law 1 (< 3.0 ms)",
+          "",
+          "[admission_governance_7dim]",
+          "allow_custom_skin = " + allowSkin,
+          "allow_origin_weapons = " + allowWeapons,
+          'max_ugo_item_tier = "' + ugoTier + '"',
+          "allow_domega_extended_handoff = " + allowHandoff,
+          "allow_origin_xp_sync = " + allowXp,
+          "enable_14element_spatial_shield = " + enableShield,
+          "allow_currency_import = false  # HARD ECONOMIC FIREWALL",
+          "",
+          e.snippet
+        ].join("\n");
+        document.getElementById("generatedCodePre").textContent = toml;
+      }
+
+      function renderTaohuayuanRoutes() {
+        const wrap = document.getElementById("routeCardsContainer");
+        wrap.innerHTML = "";
+        ROUTES.forEach(function (r, idx) {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = idx === state.selectedRouteIdx
+            ? "w-full text-left p-3.5 rounded-xl border bg-amber-500/15 border-amber-400 transition space-y-1"
+            : "w-full text-left p-3.5 rounded-xl border bg-slate-900/80 border-slate-800 hover:border-slate-600 transition space-y-1";
+          card.innerHTML =
+            '<div class="flex items-center justify-between gap-2">' +
+              '<span class="text-xs sm:text-sm font-bold text-white">' + r.title + '</span>' +
+              '<span class="text-[10px] mono text-amber-300">' + r.suns + '</span>' +
+            '</div>' +
+            '<p class="text-xs text-slate-300">' + r.desc + '</p>';
+          card.addEventListener("click", function () {
+            state.selectedRouteIdx = idx;
+            renderTaohuayuanRoutes();
+          });
+          wrap.appendChild(card);
+        });
+        renderLatestPassCard();
+      }
+
+      function renderLatestPassCard() {
+        const latest = state.issuedPasses[0];
+        document.getElementById("passTitleReadout").textContent = latest.routeTitle;
+        document.getElementById("passDetailBody").innerHTML = [
+          '<div><span class="text-slate-400">通行证号：</span><span class="text-amber-300 font-bold">' + latest.passId + '</span></div>',
+          '<div><span class="text-slate-400">入口星门：</span><span class="text-cyan-300">' + latest.entrySuns + '</span></div>',
+          '<div><span class="text-slate-400">实体地标：</span><span class="text-white">' + latest.landmark + ' (桃花源古镇中心广场)</span></div>',
+          '<div><span class="text-slate-400">碳基旅客：</span><span class="text-slate-200">' + latest.travelerDid + '</span></div>',
+          '<div><span class="text-slate-400">硅基伴游：</span><span class="text-cyan-200">' + latest.companionDid + '</span></div>',
+          '<div><span class="text-slate-400">NFC定气锚：</span><span class="text-emerald-300">' + latest.nfcSeal + '</span></div>',
+          '<div><span class="text-slate-400">带入货币：</span><span class="text-emerald-400">' + latest.currencyImported + '</span></div>'
+        ].join("");
+      }
+
+      function appendChronicle(entry) {
+        state.chronicleLogs.unshift(entry);
+        if (state.chronicleLogs.length > 25) state.chronicleLogs.length = 25;
+        const hashSeed = (state.fencingToken * 2654435761 >>> 0).toString(16).padStart(8, "0");
+        document.getElementById("merkleHeadBadge").textContent = "HEAD: " + hashSeed.slice(0, 4) + ".." + hashSeed.slice(-4);
+        renderOpsKpisAndLogs();
+      }
+
+      function renderOpsKpisAndLogs() {
+        document.getElementById("kpiFencingToken").textContent = "#" + state.fencingToken;
+        document.getElementById("kpiActiveClones").textContent = String(state.activeClones);
+        document.getElementById("kpiTravelPasses").textContent = String(state.issuedPasses.length);
+        document.getElementById("kpiBlockedCurrency").textContent = state.blockedCurrencyCount + " 次 (0.00)";
+
+        const feed = document.getElementById("opsChronicleFeed");
+        feed.innerHTML = state.chronicleLogs
+          .map(function (item) {
+            return '<div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-300 leading-snug">' + item + '</div>';
+          })
+          .join("");
+      }
+
+      function renderOpsStaticPanels() {
+        const elGrid = document.getElementById("opsElementsMiniGrid");
+        elGrid.innerHTML = FOURTEEN_ELEMENTS.map(function (row) {
+          return (
+            '<div class="p-1.5 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between text-[10px]">' +
+              '<span class="text-slate-300 truncate">' + row[0].slice(0, 3) + ' ' + row[1] + '</span>' +
+              '<span class="mono text-cyan-300 font-semibold">' + row[2] + '</span>' +
+            '</div>'
+          );
+        }).join("");
+
+        const selFrom = document.getElementById("selDispatchFrom");
+        const selTo = document.getElementById("selDispatchTo");
+        selFrom.innerHTML = "";
+        selTo.innerHTML = "";
+        ENGINES.forEach(function (eng, idx) {
+          const o1 = document.createElement("option");
+          o1.value = String(idx);
+          o1.textContent = eng.short + " (" + eng.suns.slice(0, 15) + "…)";
+          selFrom.appendChild(o1);
+
+          const o2 = document.createElement("option");
+          o2.value = String(idx);
+          o2.textContent = eng.short + " (" + eng.suns.slice(0, 15) + "…)";
+          selTo.appendChild(o2);
+        });
+        selFrom.value = "2"; // MC Fabric
+        selTo.value = "0";   // UE5 Roman Empire
+      }
+
+      function spawnBridgePacket(fromIdx, toIdx, mode) {
+        if (fromIdx === toIdx) {
+          showToast("源世界与目标宿主世界相同，请选择两个不同引擎节点进行跨界桥接！");
+          return;
+        }
+        state.fencingToken += 1;
+        if (mode === "SINGLETON") {
+          if (ENGINES[fromIdx].residents > 0) ENGINES[fromIdx].residents -= 1;
+          ENGINES[toIdx].residents += 1;
+        } else {
+          state.activeClones += 1;
+          ENGINES[toIdx].residents += 1;
+        }
+        state.packets.push({
+          fromIdx: fromIdx,
+          toIdx: toIdx,
+          mode: mode,
+          progress: 0
+        });
+        playTone("jump");
+        appendChronicle(
+          "[#" + state.fencingToken + "] " +
+          (mode === "SINGLETON" ? "SINGLETON_2PC" : "CLONE_CRDT") +
+          ": " + ENGINES[fromIdx].short + " ➔ " + ENGINES[toIdx].short + " (跨界带币: 0.00)"
+        );
+      }
+
+      // 4K Star-Gate Topology Canvas Loop
+      const canvas = document.getElementById("opsTopologyCanvas");
+      const ctx = canvas.getContext("2d");
+
+      function resizeOpsCanvas() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          canvas.width = Math.floor(rect.width * (window.devicePixelRatio || 1));
+          canvas.height = Math.floor(rect.height * (window.devicePixelRatio || 1));
+        }
+      }
+
+      function getNodePosition(idx, w, h) {
+        const cx = w * 0.5;
+        const cy = h * 0.5;
+        if (ENGINES[idx].id === "taohuayuan-world-s2rb") {
+          return { x: cx, y: cy };
+        }
+        const ringIndices = [0, 1, 2, 3, 4, 5, 7];
+        const posInRing = ringIndices.indexOf(idx);
+        const angle = (posInRing / ringIndices.length) * Math.PI * 2 - Math.PI / 2;
+        const rx = Math.min(w * 0.37, 290 * (window.devicePixelRatio || 1));
+        const ry = Math.min(h * 0.35, 135 * (window.devicePixelRatio || 1));
+        return {
+          x: cx + Math.cos(angle) * rx,
+          y: cy + Math.sin(angle) * ry
+        };
+      }
+
+      let lastTs = performance.now();
+      function animateTopology(now) {
+        const dt = Math.min(0.05, (now - lastTs) / 1000);
+        lastTs = now;
+        if (state.fuseFlashTimer > 0) {
+          state.fuseFlashTimer = Math.max(0, state.fuseFlashTimer - dt);
+        }
+
+        if (state.activeSurface === "ops" && canvas.width > 0) {
+          const dpr = window.devicePixelRatio || 1;
+          const w = canvas.width;
+          const h = canvas.height;
+          ctx.clearRect(0, 0, w, h);
+
+          // Subtle background grid
+          ctx.strokeStyle = "rgba(30, 41, 59, 0.45)";
+          ctx.lineWidth = 1;
+          const step = 32 * dpr;
+          for (let gx = 0; gx < w; gx += step) {
+            ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
+          }
+          for (let gy = 0; gy < h; gy += step) {
+            ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
+          }
+
+          const hubPos = { x: w * 0.5, y: h * 0.5 };
+
+          // Spokes from Genesis Hub #001 to all outer engine nodes
+          ENGINES.forEach(function (eng, idx) {
+            if (eng.id === "taohuayuan-world-s2rb") return;
+            const p = getNodePosition(idx, w, h);
+            ctx.beginPath();
+            ctx.moveTo(hubPos.x, hubPos.y);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = state.fuseFlashTimer > 0
+              ? "rgba(244, 63, 94, 0.75)"
+              : "rgba(34, 211, 238, 0.24)";
+            ctx.lineWidth = 1.5 * dpr;
+            ctx.stroke();
+          });
+
+          // Animate packets
+          for (let i = state.packets.length - 1; i >= 0; i--) {
+            const pk = state.packets[i];
+            pk.progress += dt * 1.15;
+            if (pk.progress >= 1) {
+              state.packets.splice(i, 1);
+              continue;
+            }
+            const p0 = getNodePosition(pk.fromIdx, w, h);
+            const p1 = getNodePosition(pk.toIdx, w, h);
+            const px = p0.x + (p1.x - p0.x) * pk.progress;
+            const py = p0.y + (p1.y - p0.y) * pk.progress;
+
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(p1.x, p1.y);
+            ctx.strokeStyle = pk.mode === "SINGLETON" ? "rgba(251, 191, 36, 0.65)" : "rgba(192, 132, 252, 0.65)";
+            ctx.lineWidth = 2.2 * dpr;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(px, py, 5.5 * dpr, 0, Math.PI * 2);
+            ctx.fillStyle = pk.mode === "SINGLETON" ? "#fbbf24" : "#c084fc";
+            ctx.fill();
+          }
+
+          // Draw nodes
+          ENGINES.forEach(function (eng, idx) {
+            const p = getNodePosition(idx, w, h);
+            const isHub = eng.id === "taohuayuan-world-s2rb";
+            const radius = (isHub ? 26 : 18) * dpr;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = isHub ? "rgba(245, 158, 11, 0.22)" : "rgba(15, 23, 42, 0.92)";
+            ctx.fill();
+            ctx.lineWidth = (isHub ? 2.5 : 1.6) * dpr;
+            ctx.strokeStyle = isHub ? "#fbbf24" : "#38bdf8";
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold " + Math.round(10 * dpr) + "px Inter, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(isHub ? "#001 桃花源母港" : eng.short, p.x, p.y - 2 * dpr);
+
+            ctx.fillStyle = isHub ? "#fde68a" : "#67e8f9";
+            ctx.font = Math.round(9 * dpr) + "px monospace";
+            ctx.fillText("驻留:" + eng.residents, p.x, p.y + 11 * dpr);
+          });
+        }
+
+        window.requestAnimationFrame(animateTopology);
+      }
+
+      function bindEvents() {
+        document.getElementById("tabBtnRobot0").addEventListener("click", function () { switchSurface("robot0"); });
+        document.getElementById("tabBtnTaohuayuan").addEventListener("click", function () { switchSurface("taohuayuan"); });
+        document.getElementById("tabBtnOpsDeck").addEventListener("click", function () { switchSurface("ops"); });
+
+        document.getElementById("btnToggleAudio").addEventListener("click", function () {
+          state.audioEnabled = !state.audioEnabled;
+          document.getElementById("audioLabel").textContent = state.audioEnabled ? "音效开启" : "已静音";
+          showToast(state.audioEnabled ? "星门 Web Audio 合成音效已开启" : "音效已静音");
+        });
+
+        document.getElementById("btnLaunchDemoToOps").addEventListener("click", function () {
+          const d = DEMOS[state.selectedDemoIdx];
+          const fIdx = ENGINES.findIndex(function (e) { return e.id === d.fromEngine; });
+          const tIdx = ENGINES.findIndex(function (e) { return e.id === d.toEngine; });
+          switchSurface("ops");
+          spawnBridgePacket(fIdx, tIdx, d.id === "demo2" ? "CLONE" : "SINGLETON");
+          showToast("已在古镇 4K 联运大屏触发 [" + d.shortTitle + "] 实时桥接脉冲！");
+        });
+
+        ["chkAllowSkin", "chkAllowWeapons", "chkAllowHandoff", "chkAllowXp", "chkEnableShield", "selUgoTier", "inpS2X", "inpS2Y", "inpS2Z"].forEach(function (id) {
+          document.getElementById(id).addEventListener("input", updateCoordinateAndTomlOutput);
+          document.getElementById(id).addEventListener("change", updateCoordinateAndTomlOutput);
+        });
+
+        document.getElementById("btnTamperCurrency").addEventListener("click", function () {
+          state.blockedCurrencyCount += 1;
+          playTone("fuse");
+          appendChronicle("[403_FIREWALL] 拦截非法开启 allow_currency_import 请求 · 原世界货币保持托管冻结 (0.00)");
+          showToast("S2RB_ERR_403_CURRENCY_IMPORT_FORBIDDEN：跨世界货币带入已被协议宪法层硬拦截，运营大屏审计计数 +1！");
+        });
+
+        document.getElementById("btnCopyConfig").addEventListener("click", function () {
+          const code = document.getElementById("generatedCodePre").textContent;
+          const ta = document.createElement("textarea");
+          ta.value = code;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand("copy"); } catch (e) {}
+          document.body.removeChild(ta);
+          showToast("已复制当前宿主引擎 s2rb-host.toml 与原生初始化代码！");
+        });
+
+        document.getElementById("btnIssueTravelPass").addEventListener("click", function () {
+          const r = ROUTES[state.selectedRouteIdx];
+          const traveler = document.getElementById("selTravelerDid").value;
+          const companion = document.getElementById("selCompanionDid").value;
+          const seq = state.issuedPasses.length + 1;
+          const passId = "PASS-TY-" + ((Date.now() & 0xffffff).toString(16).toUpperCase().padStart(6, "0")) + "0" + seq;
+          state.issuedPasses.unshift({
+            passId: passId,
+            routeTitle: r.title,
+            entrySuns: r.suns,
+            landmark: GENESIS_LANDMARK,
+            travelerDid: traveler,
+            companionDid: companion,
+            nfcSeal: "NFC-TC-001-ARCH-" + String(seq).padStart(5, "0"),
+            cryoMult: "1.5x",
+            currencyImported: "0.00 (原世界托管冻结)"
+          });
+          playTone("pass");
+          renderLatestPassCard();
+          appendChronicle("[PASS_MINTED] " + passId + " 已签发 · 锚定桃花源古镇 " + GENESIS_LANDMARK);
+          showToast("成功签发桃源县虚实联游通行证 " + passId + "，并已同步至古镇 4K 运营大屏！");
+        });
+
+        document.getElementById("btnDispatchSingleton").addEventListener("click", function () {
+          const f = parseInt(document.getElementById("selDispatchFrom").value, 10);
+          const t = parseInt(document.getElementById("selDispatchTo").value, 10);
+          spawnBridgePacket(f, t, "SINGLETON");
+        });
+
+        document.getElementById("btnDispatchClone").addEventListener("click", function () {
+          const f = parseInt(document.getElementById("selDispatchFrom").value, 10);
+          const t = parseInt(document.getElementById("selDispatchTo").value, 10);
+          spawnBridgePacket(f, t, "CLONE");
+        });
+
+        document.getElementById("btnGlobalRedAnchor").addEventListener("click", function () {
+          const t0 = performance.now();
+          let moved = 0;
+          const hubIdx = ENGINES.findIndex(function (e) { return e.id === "taohuayuan-world-s2rb"; });
+          ENGINES.forEach(function (eng, idx) {
+            if (idx !== hubIdx && eng.residents > 0) {
+              moved += eng.residents;
+              state.packets.push({ fromIdx: idx, toIdx: hubIdx, mode: "SINGLETON", progress: 0 });
+              ENGINES[hubIdx].residents += eng.residents;
+              eng.residents = 0;
+            }
+          });
+          state.fencingToken += 1;
+          state.fuseFlashTimer = 1.6;
+          const elapsed = Math.max(0.42, performance.now() - t0).toFixed(2);
+          document.getElementById("redAnchorBtnReadout").textContent = "已召回 (" + elapsed + "ms <= 3ms)";
+          playTone("fuse");
+          appendChronicle("[LAW1_RED_ANCHOR] 全局紧急熔断完成 · 召回 " + moved + " 具容器返抵桃花源母港 (" + elapsed + "ms)");
+          showToast("硅基第一定律红锚中断触发：全部 " + moved + " 具跨界容器已在 " + elapsed + "ms 内安全撤回桃花源中心广场母港！");
+        });
+
+        window.addEventListener("resize", resizeOpsCanvas);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.lucide && typeof window.lucide.createIcons === "function") {
+          window.lucide.createIcons();
+        }
+        syncInputsFromSelectedEngine();
+        renderDemoSection();
+        renderEngineWorkbench();
+        renderTaohuayuanRoutes();
+        renderOpsStaticPanels();
+        renderOpsKpisAndLogs();
+        bindEvents();
+        window.requestAnimationFrame(animateTopology);
+      });
+    })();
+  </script>
+</body>
+</html>

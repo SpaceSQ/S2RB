@@ -1,0 +1,13 @@
+{
+  "name": "@space2/s2rb-core-ts",
+  "version": "3.0.0",
+  "description": "WP-01 & WP-02 TypeScript/ESM Core SDK for S2RB v3.0 Super Game Connector (9.6m3 14-Element Character Container & Merkle Chronicle Ledger)",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "scripts": {
+    "test": "node --test tests/wp01_wp02.test.mjs",
+    "demo": "node examples/genesis_three_heroes_demo.mjs"
+  },
+  "license": "Apache-2.0 OR MIT"
+}

@@ -1,0 +1,24 @@
+---
+description: S2RB v3.0 Constitutional Rules for WP-03 (s2rb-bridge-core) & WP-04 (s2rb-renderer-kernel)
+globs: ["crates/s2rb-bridge-core/**/*", "crates/s2rb-renderer-kernel/**/*", "packages/**/*"]
+alwaysApply: true
+---
+
+# S2RB v3.0 WP-03 & WP-04 Constitutional Engineering Rules
+
+1. **Singleton Mode Fencing-Token Split-Brain Immunity**:
+   - Every Singleton lease carries a monotonically increasing `fencing_token: u64`.
+   - Target World B NEVER spawns a Singleton container without a valid `DespawnCommitReceipt` from Source World A and `new_token > last_seen_token`.
+   - If transit exceeds `3000ms` (or Silicon Law 1 Red Anchor Recall fires in `< 3ms`), abort transit, bump `fencing_token`, and restore `LastKnownGoodSnapshot` to `META-CN-001-TAOHUAYUAN2-001-2`.
+
+2. **Clone/Fork Mode Quota Conservation & CRDT Re-Convergence**:
+   - Forked clones carry ID `<s2_did>#FORK-<L4>-<branch_hex>` while `PRIME_MATRIARCH` remains active.
+   - Scarce consumables use `ConsumableQuotaEscrow` so `matriarch_available + sum(clone_held) + sum(consumed) == initial_supply`.
+   - Asynchronous Matriarch merge uses commutative, associative, idempotent `PN-Counter` (per-branch monotonic XP state) and `OR-Set` (unique-tagged hybrid skills & honors).
+
+3. **9.6 m3 Hard SDF Clipping & @ dOmega Extended Handoff**:
+   - Primary character/cape/aura passes clip fragments where `sdBox9m6(p_local) > 0.0` (`[-1,1]x[-1,1]x[0,2.4]` m), yielding `0` leaked pixels outside `9.6 m3`.
+   - Projectiles, beams, wide-area AoE (`r > 1.0m`), and polearm tips (`len > 1.0m`) crossing `dOmega` emit `HostEffectSpawnCommand` converted into target host coordinates (`UE5 cm`, `Unity m`, `glTF m`, `Source2 inch`).
+
+4. **Stealth Envelope Default Zero-DrawCall Invisibility**:
+   - After the `3.0s` arrival/extraction ceremony (`opacity = 0.92`), transition automatically to `STEALTH_GAMEPLAY_INVISIBLE` (`opacity = 0.0`, `shell_draw_calls = 0`), waking only on `Alt+R` (`0.35`) or backend safety telemetry (`0.85`).

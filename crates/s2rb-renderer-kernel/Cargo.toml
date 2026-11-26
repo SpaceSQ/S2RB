@@ -1,0 +1,15 @@
+[package]
+name = "s2rb-renderer-kernel"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WP-04: 9.6m3 SDF Hard-Boundary Clipper, @ dOmega Extended Effect Handoff Bus, 4-State Stealth Envelope & GPU Shaders"
+
+[lib]
+name = "s2rb_renderer_kernel"
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[dependencies]
+s2rb-protocol = { path = "../s2rb-protocol" }
+s2rb-container = { path = "../s2rb-container" }
+s2rb-bridge-core = { path = "../s2rb-bridge-core" }

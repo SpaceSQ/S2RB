@@ -1,0 +1,12 @@
+[package]
+name = "s2rb-genesis-hub"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WP-08 Taohuayuan Ancient Town Genesis Hub (#001), Dual /s2RB Portals & 4K Operations Telemetry"
+
+[dependencies]
+s2rb-protocol = { path = "../s2rb-protocol" }
+s2rb-container = { path = "../s2rb-container" }
+s2rb-bridge-core = { path = "../s2rb-bridge-core" }
+s2rb-daemon = { path = "../s2rb-daemon" }

@@ -1,0 +1,8 @@
+[configuration]
+entry_symbol = "s2rb_gdextension_init"
+compatibility_minimum = "4.2"
+
+[libraries]
+linux.x86_64 = "res://addons/s2rb/bin/libs2rb_plugin_sdk.so"
+windows.x86_64 = "res://addons/s2rb/bin/s2rb_plugin_sdk.dll"
+macos = "res://addons/s2rb/bin/libs2rb_plugin_sdk.dylib"

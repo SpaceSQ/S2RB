@@ -1,0 +1,17 @@
+[package]
+name = "s2rb-plugin-sdk"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WP-07 Unified C99 FFI & IPC Host Game Engine Plugin SDK for 8 Target Ecosystems"
+
+[lib]
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+s2rb-protocol = { path = "../s2rb-protocol" }
+s2rb-container = { path = "../s2rb-container" }
+s2rb-bridge-core = { path = "../s2rb-bridge-core" }
+s2rb-renderer-kernel = { path = "../s2rb-renderer-kernel" }
+s2rb-ugo-inventory = { path = "../s2rb-ugo-inventory" }
+s2rb-daemon = { path = "../s2rb-daemon" }

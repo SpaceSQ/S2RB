@@ -1,0 +1,27 @@
+---
+description: S2RB v3.0 Super Game Connector Constitutional Rules for WP-01 (s2rb-protocol) & WP-02 (s2rb-container)
+globs: ["crates/**/*", "packages/**/*", "engine-sdks/**/*"]
+alwaysApply: true
+---
+
+# S2RB v3.0 WP-01 & WP-02 Constitutional Engineering Rules
+
+1. **9.6 m3 Smart Space Envelope Invariant**:
+   - Every `CharacterContainer` represents a `2.0m x 2.0m x 2.4m` (`9.6 m3`) local ego-centric smart space (`x in [-1.0, +1.0]`, `y in [-1.0, +1.0]`, `z in [0.0, 2.4]`), 1:1 isomorphic with the Space2 SSSU standard.
+   - Primary character meshes, cloth, and aura particles never exceed this `9.6 m3` box. Long-range projectiles or wide-area AoE effects crossing `dOmega` emit an `S2BoundaryExitEvent` via `kinematics_9m6` for host-engine handoff.
+
+2. **14 Space2 Elements + Superimposed Game Overlay**:
+   - Always preserve exact element codes `E01_LUMINA` through `E14_CARBON_SOVEREIGNTY` (6 explicit physical-dynamic + 8 implicit bio-cognitive-sovereignty tensors).
+   - Game attributes (`o2_reserve_sec`, `acoustic_radar_m`, `thermal_cdr_mult`, `poise_tenacity`, `mana_regen_rate`, `shield_integrity`, etc.) are deterministically derived from the 14-element state + 14x14 cross-coupling matrix + avatar gear affixes.
+
+3. **S2-DID v4.0 & CD-U6A 6-Segment Addressing**:
+   - Enforce strict 22-character `S2-DID` validation (`[1-char Species D/V/I/A][5-char Origin][6-digit YYMMDD][8-digit Serial][2-char Base26 Checksum]`), supporting lossless migration from legacy v3.0 (checksum at indices 12..14).
+   - In the 7-category S2 taxonomy, the 7th category is strictly `MYTH` (never `MATH`).
+   - Default Genesis Hub #001 is `META-CN-001-TAOHUAYUAN2-001-2` (Taohuayuan Ancient Town Central Plaza / `TC-001-ARCH`).
+
+4. **Append-Only Chronicle WAL, Trust Taint Isolation & Selective Merkle Proofs**:
+   - Never overwrite historical state destructively. Every world entry/exit, tensor spike, loot drop, skill synthesis, or clone merge appends a hash-chained `ChronicleEvent` and updates `merkle_root`.
+   - Separate `Tier1Authoritative` (certified online server) progression from `Tier3LocalSandbox` (single-player mod) progression via cryptographic taint tags so single-player freedom never pollutes competitive online balance.
+
+5. **Zero Cross-World Currency Import Iron Law**:
+   - `allow_currency_import` is permanently `false` at both type level (`ZeroImportedCurrency`) and database trigger level. Origin-world currencies stay frozen inside `OriginEscrowVault`; target-world imported currency is strictly `0`.
